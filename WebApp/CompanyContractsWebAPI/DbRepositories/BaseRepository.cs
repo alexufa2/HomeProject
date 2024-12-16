@@ -13,12 +13,17 @@ namespace CompanyContractsWebAPI.DbRepositories
 
         protected virtual string _fullTableName => $"{_schemaName}.{_tableName}";
 
+        protected readonly string InsertSql;
+        protected readonly string UpdateSql;
+
         public BaseRepository(string? connectionString)
         {
             if(string.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString));
 
             _connectionString = connectionString;
+            InsertSql = GetInsertSQL();
+            UpdateSql = GetUpdateSQL();
         }
 
         
@@ -31,7 +36,7 @@ namespace CompanyContractsWebAPI.DbRepositories
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                string commandText = $"{GetInsertSQL()} RETURNING id";
+                string commandText = $"{InsertSql} RETURNING id";
                 result = connection.QuerySingle<int>(commandText, item);
                 connection.Close();
             }
@@ -47,7 +52,7 @@ namespace CompanyContractsWebAPI.DbRepositories
             {
                 connection.Open();
 
-                string commandText = $"SELECT * FROM {_schemaName}.{_tableName} WHERE id = @id";
+                string commandText = $"SELECT * FROM {_fullTableName} WHERE id = @id";
                 var queryArgs = new { Id = id };
                 data = connection.Query<T>(commandText, queryArgs);
 
@@ -67,7 +72,7 @@ namespace CompanyContractsWebAPI.DbRepositories
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                string commandText = $"SELECT * FROM {_schemaName}.{_tableName}";
+                string commandText = $"SELECT * FROM {_fullTableName}";
                 result = connection.Query<T>(commandText);
                 connection.Close();
             }
@@ -82,8 +87,7 @@ namespace CompanyContractsWebAPI.DbRepositories
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                string commandText = GetUpdateSQL();
-                connection.Query(commandText, item);
+                connection.Query(UpdateSql, item);
                 connection.Close();
             }
 
@@ -96,7 +100,7 @@ namespace CompanyContractsWebAPI.DbRepositories
             {
                 connection.Open();
                 
-                string commandText = $"DELETE FROM {_schemaName}.{_tableName} WHERE id = @id";
+                string commandText = $"DELETE FROM {_fullTableName} WHERE id = @id";
                 var queryArgs = new { Id = id };
                 connection.Query(commandText, queryArgs);
 

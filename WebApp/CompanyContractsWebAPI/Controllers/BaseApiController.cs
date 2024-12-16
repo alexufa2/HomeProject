@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompanyContractsWebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
     public abstract class BaseApiController<T> : ControllerBase where T : class
     {
         protected IRepository<T> _repository;
@@ -14,31 +13,31 @@ namespace CompanyContractsWebAPI.Controllers
             _repository = repository;
         }
 
-        [HttpPost(Name = "Create")]
+        [HttpPost, Route("[controller]/Create")]
         public virtual int Create(T item)
         {
             return _repository.Create(item);
         }
 
-        [HttpGet(Name = "GetById")]
+        [HttpGet, Route("[controller]/GetById")]
         public virtual T GetById(int id)
         {
             return _repository.GetById(id);
         }
 
-        [HttpGet(Name = "GetAll")]
+        [HttpGet, Route("[controller]/GetAll")]
         public virtual IEnumerable<T> GetAll()
         {
             return _repository.GetAll();
         }
 
-        [HttpPut(Name = "Update")]
+        [HttpPut, Route("[controller]/Update")]
         public virtual bool Update(T item)
         {
             return _repository.Update(item);
         }
 
-        [HttpDelete(Name = "Delete")]
+        [HttpDelete, Route("[controller]/Delete")]
         public virtual bool Delete(int id)
         {
             return _repository.Delete(id);

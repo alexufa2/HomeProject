@@ -13,6 +13,12 @@ string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnec
 builder.Services.AddSingleton<IRepository<CompanyPurpose>, CompanyPurposeRepository>(
     c => new CompanyPurposeRepository(connectionStr));
 
+builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
+    c => new CompanyRepository(connectionStr));
+
+builder.Services.AddSingleton<IRepository<Good>, GoodRepository>(
+    c => new GoodRepository(connectionStr));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
