@@ -1,6 +1,6 @@
 ﻿namespace CompanyContractsWebAPI.Models
 {
-    public class Good: CreateGood, IEntityWithId
+    public class CompanyGoods : CreateCompanyGoods, IEntityWithId
     {
         public int Id { get; set; }
     }

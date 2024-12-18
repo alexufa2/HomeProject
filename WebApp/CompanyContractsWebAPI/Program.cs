@@ -19,6 +19,9 @@ builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
 builder.Services.AddSingleton<IRepository<Good>, GoodRepository>(
     c => new GoodRepository(connectionStr));
 
+builder.Services.AddSingleton<IRepository<CompanyGoods>, CompanyGoodsRepository>(
+    c => new CompanyGoodsRepository(connectionStr));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

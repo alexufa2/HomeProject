@@ -1,14 +1,16 @@
-﻿namespace CompanyContractsWebAPI.DbRepositories
+﻿using CompanyContractsWebAPI.Models;
+
+namespace CompanyContractsWebAPI.DbRepositories
 {
-    public interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class,  IEntityWithId, new()
     {
-        int Create(T item);
+        T Create(T item);
         
         T GetById(int id);
         
         IEnumerable<T> GetAll();
 
-        bool Update(T item);
+        T Update(T item);
 
         bool Delete(int id);
     }

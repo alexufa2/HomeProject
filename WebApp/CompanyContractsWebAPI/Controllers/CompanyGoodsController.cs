@@ -3,9 +3,9 @@ using CompanyContractsWebAPI.Models;
 
 namespace CompanyContractsWebAPI.Controllers
 {
-    public class CompanyPurposeController : BaseApiController<CompanyPurpose, CreateCompanyPurpose>
+    public class CompanyGoodsController : BaseApiController<CompanyGoods, CreateCompanyGoods>
     {
-        public CompanyPurposeController(IRepository<CompanyPurpose> repository) :
+        public CompanyGoodsController(IRepository<CompanyGoods> repository) :
             base(repository)
         { }
     }

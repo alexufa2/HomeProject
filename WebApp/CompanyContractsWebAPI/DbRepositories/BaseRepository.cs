@@ -1,9 +1,10 @@
-﻿using Dapper;
+﻿using CompanyContractsWebAPI.Models;
+using Dapper;
 using Npgsql;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
-    public abstract class BaseRepository<T>: IRepository<T> where T : class
+    public abstract class BaseRepository<T>: IRepository<T> where T : class, IEntityWithId, new()
     {
         private string _connectionString { get; set; }
 
@@ -29,19 +30,20 @@ namespace CompanyContractsWebAPI.DbRepositories
         
         protected abstract string GetInsertSQL();
         
-        public virtual int Create(T item)
+        public virtual T Create(T item)
         {
-            int result;
+            int newId;
 
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
                 string commandText = $"{InsertSql} RETURNING id";
-                result = connection.QuerySingle<int>(commandText, item);
+                newId = connection.QuerySingle<int>(commandText, item);
                 connection.Close();
             }
 
-            return result;
+            item.Id = newId;
+            return item;
         }
 
         public virtual T GetById(int id)
@@ -82,7 +84,7 @@ namespace CompanyContractsWebAPI.DbRepositories
 
         protected abstract string GetUpdateSQL();
 
-        public virtual bool Update(T item)
+        public virtual T Update(T item)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
@@ -91,7 +93,7 @@ namespace CompanyContractsWebAPI.DbRepositories
                 connection.Close();
             }
 
-            return true;
+            return item;
         }
 
         public virtual bool Delete(int id)
