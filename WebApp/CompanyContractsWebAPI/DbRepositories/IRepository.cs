@@ -2,7 +2,7 @@
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
-    public interface IRepository<T> where T : class,  IEntityWithId, new()
+    public interface IRepository<T> where T : class, IEntityWithId, new()
     {
         T Create(T item);
         

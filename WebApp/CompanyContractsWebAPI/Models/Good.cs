@@ -1,7 +1,10 @@
 ﻿namespace CompanyContractsWebAPI.Models
 {
-    public class Good: CreateGood, IEntityWithId
+    public class Good : IEntityWithId
     {
         public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Measurement_Unit { get; set; }
     }
 }

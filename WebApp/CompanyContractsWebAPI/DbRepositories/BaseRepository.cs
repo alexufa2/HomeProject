@@ -1,116 +1,77 @@
 ﻿using CompanyContractsWebAPI.Models;
-using Dapper;
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
-    public abstract class BaseRepository<T>: IRepository<T> where T : class, IEntityWithId, new()
+    public abstract class BaseRepository<T> : IRepository<T> where T : class, IEntityWithId, new()
     {
-        private string _connectionString { get; set; }
+        protected ApplicationContext _applicationContext { get; set; }
 
-        protected abstract string _tableName {get;}
-
-        protected virtual string _schemaName => "dbo";
-
-        protected virtual string _fullTableName => $"{_schemaName}.{_tableName}";
-
-        protected readonly string InsertSql;
-        protected readonly string UpdateSql;
-
-        public BaseRepository(string? connectionString)
+        public BaseRepository(ApplicationContext applicationContext)
         {
-            if(string.IsNullOrEmpty(connectionString))
-                throw new ArgumentNullException(nameof(connectionString));
+            if (applicationContext == null)
+                throw new ArgumentNullException(nameof(applicationContext));
 
-            _connectionString = connectionString;
-            InsertSql = GetInsertSQL();
-            UpdateSql = GetUpdateSQL();
+            _applicationContext = applicationContext;
         }
 
-        
-        protected abstract string GetInsertSQL();
-        
         public virtual T Create(T item)
         {
-            int newId;
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
-            {
-                connection.Open();
-                string commandText = $"{InsertSql} RETURNING id";
-                newId = connection.QuerySingle<int>(commandText, item);
-                connection.Close();
-            }
-
-            item.Id = newId;
+            var dbSet = _applicationContext.Set<T>();
+            dbSet.Add(item);
+            _applicationContext.SaveChanges();
             return item;
         }
 
         public virtual T GetById(int id)
         {
-            IEnumerable<T> data;
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string commandText = $"SELECT * FROM {_fullTableName} WHERE id = @id";
-                var queryArgs = new { Id = id };
-                data = connection.Query<T>(commandText, queryArgs);
-
-                connection.Close();
-            }
-
-            if (data == null || !data.Any())
-                return null;
-
-            return data.FirstOrDefault();
+            return _applicationContext.Set<T>().FirstOrDefault(f => f.Id == id);
         }
 
         public virtual IEnumerable<T> GetAll()
         {
-            IEnumerable<T> result;
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
-            {
-                connection.Open();
-                string commandText = $"SELECT * FROM {_fullTableName}";
-                result = connection.Query<T>(commandText);
-                connection.Close();
-            }
-
-            return result;
+            return _applicationContext.Set<T>();
         }
-
-        protected abstract string GetUpdateSQL();
 
         public virtual T Update(T item)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
-            {
-                connection.Open();
-                connection.Query(UpdateSql, item);
-                connection.Close();
-            }
+            T originalItem = _applicationContext.Set<T>().FirstOrDefault(f => f.Id == item.Id);
+            if (originalItem == null)
+                return null;
 
-            return item;
+            CopyFields(item, originalItem);
+            _applicationContext.SaveChanges();
+            return originalItem;
         }
 
         public virtual bool Delete(int id)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
-            {
-                connection.Open();
-                
-                string commandText = $"DELETE FROM {_fullTableName} WHERE id = @id";
-                var queryArgs = new { Id = id };
-                connection.Query(commandText, queryArgs);
+            var dbSet = _applicationContext.Set<T>();
+            T originalItem = dbSet.FirstOrDefault(f => f.Id == id);
+            if (originalItem == null)
+                return false;
 
-                connection.Close();
-            }
-
+            dbSet.Remove(originalItem);
+            _applicationContext.SaveChanges();
             return true;
         }
 
+        protected void CopyFields(T sourceItem, T destItem)
+        {
+            if (sourceItem == null || destItem == null)
+                return;
+
+            var type = typeof(T);
+
+            foreach (var field in type.GetFields())
+            {
+                field.SetValue(destItem, field.GetValue(sourceItem));
+            }
+
+            foreach (var prop in type.GetProperties())
+            {
+                prop.SetValue(destItem, prop.GetValue(sourceItem, null), null);
+            }
+        }
     }
 }

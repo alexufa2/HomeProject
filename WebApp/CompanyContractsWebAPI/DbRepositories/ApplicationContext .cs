@@ -1,0 +1,36 @@
+﻿using CompanyContractsWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CompanyContractsWebAPI.DbRepositories
+{
+    public class ApplicationContext : DbContext
+    {
+        public static readonly string Schema = "dbo";
+        public static readonly string Migrations = "_migrations";
+        protected readonly string _connection;
+
+        public ApplicationContext(IConfiguration configuration, DbContextOptions options)
+               : base(options)
+        {
+            _connection = GetConnection(configuration);
+        }
+        public DbSet<CompanyPurpose> CompanyPurposes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema(Schema);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(_connection, x => x.MigrationsHistoryTable(Migrations, Schema));
+        }
+
+        public static string GetConnection(IConfiguration configuration)
+        {
+            return configuration.GetConnectionString("DefaultConnectionString")
+                ?? throw new Exception("Connection string not found");
+        }
+
+    }
+}

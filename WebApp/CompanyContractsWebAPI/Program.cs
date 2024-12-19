@@ -1,5 +1,6 @@
 using CompanyContractsWebAPI.DbRepositories;
 using CompanyContractsWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,18 +10,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnectionString");
-// Add services to the container.
-builder.Services.AddSingleton<IRepository<CompanyPurpose>, CompanyPurposeRepository>(
-    c => new CompanyPurposeRepository(connectionStr));
 
-builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
-    c => new CompanyRepository(connectionStr));
+//Add services to the container.
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionStr));
 
-builder.Services.AddSingleton<IRepository<Good>, GoodRepository>(
-    c => new GoodRepository(connectionStr));
+builder.Services.AddScoped<IRepository<CompanyPurpose>, CompanyPurposeRepository>();
 
-builder.Services.AddSingleton<IRepository<CompanyGoods>, CompanyGoodsRepository>(
-    c => new CompanyGoodsRepository(connectionStr));
+//builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
+//    c => new CompanyRepository(connectionStr));
+
+//builder.Services.AddSingleton<IRepository<Good>, GoodRepository>(
+//    c => new GoodRepository(connectionStr));
+
+//builder.Services.AddSingleton<IRepository<CompanyGoods>, CompanyGoodsRepository>(
+//    c => new CompanyGoodsRepository(connectionStr));
 
 var app = builder.Build();
 

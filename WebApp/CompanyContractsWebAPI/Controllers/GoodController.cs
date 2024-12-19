@@ -3,7 +3,7 @@ using CompanyContractsWebAPI.Models;
 
 namespace CompanyContractsWebAPI.Controllers
 {
-    public class GoodController : BaseApiController<Good, CreateGood>
+    public class GoodController : BaseApiController<Good>
     {
         public GoodController(IRepository<Good> repository) :
             base(repository)

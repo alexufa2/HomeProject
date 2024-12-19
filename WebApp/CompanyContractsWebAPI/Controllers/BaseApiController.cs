@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompanyContractsWebAPI.Controllers
 {
     [ApiController]
-    public abstract class BaseApiController<T, U> : ControllerBase
-        where T : class, U, IEntityWithId, new()
-        where U : class
+    public abstract class BaseApiController<T> : ControllerBase
+        where T : class, IEntityWithId, new()
 
     {
         protected IRepository<T> _repository;
@@ -18,137 +17,75 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual ApiResultWithItem<T> Create(U item)
+        public virtual IActionResult Create(T item)
         {
             try
             {
-                T dbItem = GetCopyedFields(item);
-                T result = _repository.Create(dbItem);
+                T result = _repository.Create(item);
 
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = string.Empty,
-                    ResultItem = result
-                };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = ex.Message,
-                    ResultItem = null
-                };
+                return Problem(ex.Message);
             }
         }
 
         [HttpGet, Route("[controller]/GetById")]
-        public virtual ApiResultWithItem<T> GetById(int id)
+        public virtual IActionResult GetById(int id)
         {
             try
             {
                 T result = _repository.GetById(id);
-
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = string.Empty,
-                    ResultItem = result
-                };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = ex.Message,
-                    ResultItem = null
-                };
+                return Problem(ex.Message);
             }
         }
 
         [HttpGet, Route("[controller]/GetAll")]
-        public virtual ApiResultWithItem<IEnumerable<T>> GetAll()
+        public virtual IActionResult GetAll()
         {
             try
             {
                 var result = _repository.GetAll();
-
-                return new ApiResultWithItem<IEnumerable<T>>
-                {
-                    ErrorMassage = string.Empty,
-                    ResultItem = result
-                };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new ApiResultWithItem<IEnumerable<T>>
-                {
-                    ErrorMassage = ex.Message,
-                    ResultItem = null
-                };
+                return Problem(ex.Message);
             }
         }
 
         [HttpPut, Route("[controller]/Update")]
-        public virtual ApiResultWithItem<T> Update(T item)
+        public virtual IActionResult Update(T item)
         {
             try
             {
                 var result = _repository.Update(item);
-
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = string.Empty,
-                    ResultItem = result
-                };
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return new ApiResultWithItem<T>
-                {
-                    ErrorMassage = ex.Message,
-                    ResultItem = null
-                };
+                return Problem(ex.Message);
             }
         }
 
         [HttpDelete, Route("[controller]/Delete")]
-        public virtual ApiResult Delete(int id)
+        public virtual IActionResult Delete(int id)
         {
             try
             {
                 var result = _repository.Delete(id);
-                return new ApiResult { ErrorMassage = string.Empty };
+                return Ok();
             }
             catch (Exception ex)
             {
-                return new ApiResult { ErrorMassage = ex.Message };
+                return Problem(ex.Message);
             }
         }
 
-        protected T GetCopyedFields(U item)
-        {
-            T result = new T();
-            var uType = item.GetType();
-            var tType = result.GetType();
-
-            foreach (var f in tType.GetFields())
-            {
-                var rField = uType.GetField(f.Name);
-                if (rField == null || rField.IsLiteral)
-                    continue;
-
-                rField.SetValue(result, f.GetValue(item));
-            }
-
-            foreach (var f in uType.GetProperties())
-            {
-                var rProp = tType.GetProperty(f.Name);
-                if (rProp == null)
-                    continue;
-
-                rProp.SetValue(result, f.GetValue(item, null), null);
-            }
-
-            return result;
-        }
     }
 }
