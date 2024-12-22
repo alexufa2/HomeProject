@@ -14,7 +14,8 @@ namespace CompanyContractsWebAPI.DbRepositories
         {
             _connection = GetConnection(configuration);
         }
-        public DbSet<CompanyPurpose> CompanyPurposes { get; set; }
+        public DbSet<Company> CompanyPurposes { get; set; }
+        public DbSet<Good> Goods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

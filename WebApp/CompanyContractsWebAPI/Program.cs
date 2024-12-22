@@ -14,7 +14,7 @@ string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnec
 //Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionStr));
 
-builder.Services.AddScoped<IRepository<CompanyPurpose>, CompanyPurposeRepository>();
+//builder.Services.AddScoped<IRepository<CompanyPurpose>, CompanyPurposeRepository>();
 
 //builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
 //    c => new CompanyRepository(connectionStr));
