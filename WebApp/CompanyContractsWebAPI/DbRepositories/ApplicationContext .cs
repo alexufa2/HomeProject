@@ -1,4 +1,4 @@
-﻿using CompanyContractsWebAPI.Models;
+﻿using CompanyContractsWebAPI.Models.DB;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompanyContractsWebAPI.DbRepositories
@@ -17,9 +17,12 @@ namespace CompanyContractsWebAPI.DbRepositories
         public DbSet<Company> Companyes { get; set; }
         public DbSet<Good> Goods { get; set; }
         public DbSet<CompanyGoodPrice> CompanyGoodPrices { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<ContractDone> ContractDones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.HasDefaultSchema(Schema);
         }
 

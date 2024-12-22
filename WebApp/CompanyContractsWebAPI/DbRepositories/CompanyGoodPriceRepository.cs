@@ -1,4 +1,5 @@
-﻿using CompanyContractsWebAPI.Models;
+﻿using CompanyContractsWebAPI.Models.DB;
+using System.ComponentModel.Design;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
@@ -36,11 +37,11 @@ namespace CompanyContractsWebAPI.DbRepositories
             return currentItem;
         }
 
-        public bool Delete(CompanyGoodPrice item)
+        public bool Delete(int companyId, int goodId)
         {
             var currentItem =
                 _applicationContext.CompanyGoodPrices
-                .FirstOrDefault(f => f.Company_Id == item.Company_Id && f.Good_Id == item.Good_Id);
+                .FirstOrDefault(f => f.Company_Id == companyId && f.Good_Id == goodId);
 
             if (currentItem == null)
                 return false;
@@ -53,6 +54,16 @@ namespace CompanyContractsWebAPI.DbRepositories
         public IEnumerable<CompanyGoodPrice> GetAll()
         {
             return _applicationContext.CompanyGoodPrices;
+        }
+
+        public IEnumerable<CompanyGoodPrice> GetByCompanyId(int companyId)
+        {
+            return _applicationContext.CompanyGoodPrices.Where(w => w.Company_Id == companyId);
+        }
+
+        public IEnumerable<CompanyGoodPrice> GetByGoodId(int goodId)
+        {
+            return _applicationContext.CompanyGoodPrices.Where(w => w.Good_Id == goodId);
         }
     }
 }

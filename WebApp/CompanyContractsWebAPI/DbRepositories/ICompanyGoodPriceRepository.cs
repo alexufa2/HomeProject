@@ -1,4 +1,4 @@
-﻿using CompanyContractsWebAPI.Models;
+﻿using CompanyContractsWebAPI.Models.DB;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
@@ -6,8 +6,10 @@ namespace CompanyContractsWebAPI.DbRepositories
     {
         CompanyGoodPrice Create(CompanyGoodPrice item);
         CompanyGoodPrice Update(CompanyGoodPrice item);
-
         IEnumerable<CompanyGoodPrice> GetAll();
-        bool Delete(CompanyGoodPrice item);
+        IEnumerable<CompanyGoodPrice> GetByCompanyId(int companyId);
+        IEnumerable<CompanyGoodPrice> GetByGoodId(int goodId);
+
+        bool Delete(int companyId, int goodId);
     }
 }

@@ -1,4 +1,4 @@
-﻿using CompanyContractsWebAPI.Models;
+﻿using CompanyContractsWebAPI.Models.DB;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {

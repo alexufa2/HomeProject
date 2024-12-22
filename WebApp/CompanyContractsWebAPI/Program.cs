@@ -1,5 +1,5 @@
 using CompanyContractsWebAPI.DbRepositories;
-using CompanyContractsWebAPI.Models;
+using CompanyContractsWebAPI.Models.DB;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

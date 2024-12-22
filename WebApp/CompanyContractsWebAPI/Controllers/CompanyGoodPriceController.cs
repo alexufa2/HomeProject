@@ -1,11 +1,12 @@
 ﻿using CompanyContractsWebAPI.DbRepositories;
-using CompanyContractsWebAPI.Models;
+using CompanyContractsWebAPI.Models.DB;
+using CompanyContractsWebAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyContractsWebAPI.Controllers
 {
     [ApiController]
-    public class CompanyGoodPriceController: ControllerBase
+    public class CompanyGoodPriceController : ControllerBase
     {
         protected ICompanyGoodPriceRepository _repository;
 
@@ -15,12 +16,13 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual IActionResult Create(CompanyGoodPrice item)
+        public virtual IActionResult Create(CompanyGoodPriceDto item)
         {
             try
             {
-                var result = _repository.Create(item);
-                return Ok(result);
+                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CompanyGoodPriceDto>(item);
+                var dbResult = _repository.Create(dbItem);
+                return Ok(item);
             }
             catch (Exception ex)
             {
@@ -33,7 +35,38 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var result = _repository.GetAll();
+                var dbResult = _repository.GetAll();
+                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet, Route("[controller]/GetByCompanyId")]
+        public virtual IActionResult GetByCompanyId(int companyId)
+        {
+            try
+            {
+                var dbResult = _repository.GetByCompanyId(companyId);
+                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet, Route("[controller]/GetByGoodId")]
+        public virtual IActionResult GetByGoodId(int goodId)
+        {
+            try
+            {
+                var dbResult = _repository.GetByGoodId(goodId);
+                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -43,12 +76,17 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPut, Route("[controller]/Update")]
-        public virtual IActionResult Update(CompanyGoodPrice item)
+        public virtual IActionResult Update(CompanyGoodPriceDto item)
         {
             try
             {
-                var result = _repository.Update(item);
-                return Ok(result);
+                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CompanyGoodPriceDto>(item);
+                var dbResult = _repository.Update(dbItem);
+                
+                if (dbResult == null)
+                    return NotFound();
+
+                return Ok(item);
             }
             catch (Exception ex)
             {
@@ -57,11 +95,11 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpDelete, Route("[controller]/Delete")]
-        public virtual IActionResult Delete(CompanyGoodPrice item)
+        public virtual IActionResult Delete(int companyId, int goodId)
         {
             try
             {
-                var result = _repository.Delete(item);
+                var result = _repository.Delete(companyId, goodId);
                 return Ok();
             }
             catch (Exception ex)

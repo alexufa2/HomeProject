@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace CompanyContractsWebAPI.Models
+namespace CompanyContractsWebAPI.Models.DB
 {
     [Table("company_good_price")]
     [PrimaryKey(nameof(Company_Id), nameof(Good_Id))]

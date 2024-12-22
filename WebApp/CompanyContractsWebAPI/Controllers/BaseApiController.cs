@@ -1,28 +1,34 @@
 ﻿using CompanyContractsWebAPI.DbRepositories;
 using CompanyContractsWebAPI.Models;
+using CompanyContractsWebAPI.Models.DB;
+using CompanyContractsWebAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CompanyContractsWebAPI.Controllers
 {
     [ApiController]
-    public abstract class BaseApiController<T> : ControllerBase
-        where T : class, IEntityWithId, new()
+    public abstract class BaseApiController<Tdb, Udto> : ControllerBase
+        where Tdb : class, IEntityWithId, new()
+        where Udto : class, IEntityWithId, new()
 
     {
-        protected IRepository<T> _repository;
+        protected IRepository<Tdb> _repository;
 
-        public BaseApiController(IRepository<T> repository)
+        public BaseApiController(IRepository<Tdb> repository)
         {
             _repository = repository;
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual IActionResult Create(T item)
+        public virtual IActionResult Create(Udto item)
         {
             try
             {
-                var result = _repository.Create(item);
-                return Ok(result);
+                var dbItem = Helper.ConvertFromDto<Tdb, Udto>(item);
+                var dbResult = _repository.Create(dbItem);
+                item.Id = dbResult.Id;
+                return Ok(item);
             }
             catch (Exception ex)
             {
@@ -35,7 +41,11 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var result = _repository.GetById(id);
+                var dbResult = _repository.GetById(id);
+                if(dbResult == null)
+                    return NotFound();
+
+                var result = Helper.ConvertToDto<Tdb, Udto>(dbResult);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -49,7 +59,8 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var result = _repository.GetAll();
+                var dbResult = _repository.GetAll();
+                var result = dbResult.Select(Helper.ConvertToDto<Tdb, Udto>);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -59,12 +70,17 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPut, Route("[controller]/Update")]
-        public virtual IActionResult Update(T item)
+        public virtual IActionResult Update(Udto item)
         {
             try
             {
-                var result = _repository.Update(item);
-                return Ok(result);
+                var dbItem = Helper.ConvertFromDto<Tdb, Udto>(item);
+                var dbResult = _repository.Update(dbItem);
+               
+                if(dbResult == null)
+                    return NotFound();
+               
+                return Ok(item);
             }
             catch (Exception ex)
             {

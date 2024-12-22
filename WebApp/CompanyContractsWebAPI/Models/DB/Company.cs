@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CompanyContractsWebAPI.Models
+namespace CompanyContractsWebAPI.Models.DB
 {
     [Table("company")]
     public class Company : IEntityWithId
