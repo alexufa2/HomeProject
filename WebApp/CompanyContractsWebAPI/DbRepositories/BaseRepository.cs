@@ -1,5 +1,4 @@
 ﻿using CompanyContractsWebAPI.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {

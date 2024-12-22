@@ -12,5 +12,7 @@ namespace CompanyContractsWebAPI.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string Measurement_Unit { get; set; }
+
+        public virtual ICollection<CompanyGoodPrice> CompanyGoodPrices { get; set; }
     }
 }

@@ -5,37 +5,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompanyContractsWebAPI.Controllers
 {
     [ApiController]
-    public abstract class BaseApiController<T> : ControllerBase
-        where T : class, IEntityWithId, new()
-
+    public class CompanyGoodPriceController: ControllerBase
     {
-        protected IRepository<T> _repository;
+        protected ICompanyGoodPriceRepository _repository;
 
-        public BaseApiController(IRepository<T> repository)
+        public CompanyGoodPriceController(ICompanyGoodPriceRepository repository)
         {
             _repository = repository;
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual IActionResult Create(T item)
+        public virtual IActionResult Create(CompanyGoodPrice item)
         {
             try
             {
                 var result = _repository.Create(item);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
-        }
-
-        [HttpGet, Route("[controller]/GetById")]
-        public virtual IActionResult GetById(int id)
-        {
-            try
-            {
-                var result = _repository.GetById(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -59,7 +43,7 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPut, Route("[controller]/Update")]
-        public virtual IActionResult Update(T item)
+        public virtual IActionResult Update(CompanyGoodPrice item)
         {
             try
             {
@@ -73,11 +57,11 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpDelete, Route("[controller]/Delete")]
-        public virtual IActionResult Delete(int id)
+        public virtual IActionResult Delete(CompanyGoodPrice item)
         {
             try
             {
-                var result = _repository.Delete(id);
+                var result = _repository.Delete(item);
                 return Ok();
             }
             catch (Exception ex)
@@ -85,6 +69,5 @@ namespace CompanyContractsWebAPI.Controllers
                 return Problem(ex.Message);
             }
         }
-
     }
 }

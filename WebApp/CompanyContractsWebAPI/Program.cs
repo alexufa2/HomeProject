@@ -14,16 +14,10 @@ string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnec
 //Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionStr));
 
-//builder.Services.AddScoped<IRepository<CompanyPurpose>, CompanyPurposeRepository>();
+builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
+builder.Services.AddScoped<IRepository<Good>, GoodRepository>();
+builder.Services.AddScoped<ICompanyGoodPriceRepository, CompanyGoodPriceRepository>();
 
-//builder.Services.AddSingleton<IRepository<Company>, CompanyRepository>(
-//    c => new CompanyRepository(connectionStr));
-
-//builder.Services.AddSingleton<IRepository<Good>, GoodRepository>(
-//    c => new GoodRepository(connectionStr));
-
-//builder.Services.AddSingleton<IRepository<CompanyGoods>, CompanyGoodsRepository>(
-//    c => new CompanyGoodsRepository(connectionStr));
 
 var app = builder.Build();
 
