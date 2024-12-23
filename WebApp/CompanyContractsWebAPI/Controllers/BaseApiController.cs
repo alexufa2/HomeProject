@@ -26,6 +26,7 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbItem = Helper.ConvertFromDto<Tdb, Udto>(item);
+                dbItem.Id = 0;
                 var dbResult = _repository.Create(dbItem);
                 item.Id = dbResult.Id;
                 return Ok(item);
