@@ -13,13 +13,16 @@ string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnec
 
 //Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connectionStr));
-
 builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<IRepository<Good>, GoodRepository>();
 builder.Services.AddScoped<ICompanyGoodPriceRepository, CompanyGoodPriceRepository>();
 
-
 var app = builder.Build();
+
+using (var context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationContext>())
+{
+    DbInintializer.Initialize(context);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

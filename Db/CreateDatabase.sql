@@ -1,5 +1,3 @@
--- Database: Auto
-
 CREATE DATABASE contractsDB
     WITH
     OWNER = postgres
