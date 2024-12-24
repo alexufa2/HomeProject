@@ -456,3 +456,7 @@ body {
             overflow-y: visible;
         }
 }
+
+.error {
+    color: red;
+}

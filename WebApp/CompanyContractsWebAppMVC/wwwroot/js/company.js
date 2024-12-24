@@ -77,32 +77,70 @@ $(document).ready(function () {
             { field: 'inn', title: 'ИНН', sortable: true },
             { field: 'address', title: 'Адрес', sortable: true },
             { title: '', field: '', width: 34, type: 'icon', icon: 'glyphicon-list-alt', tooltip: 'Посмотреть товары', events: { 'click': RedirectToCompanyGoods } },
-        { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
-        { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
+            { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
+            { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
 
-dialog = $('#dialog').dialog({
-    uiLibrary: 'bootstrap',
-    autoOpen: false,
-    resizable: false,
-    modal: true
-});
-$('#btnAdd').on('click', function () {
-    isEdit = false;
-    $('#ID').val('');
-    $('#Name').val('');
-    $('#Inn').val('');
-    $('#Address').val('');
-    dialog.open('Добавить компанию');
-});
+    dialog = $('#dialog').dialog({
+        uiLibrary: 'bootstrap',
+        autoOpen: false,
+        resizable: false,
+        modal: true
+    });
+    $('#btnAdd').on('click', function () {
+        isEdit = false;
+        $('#ID').val('');
+        $('#Name').val('');
+        $('#Inn').val('');
+        $('#Address').val('');
+        dialog.open('Добавить компанию');
+    });
 
-$('#btnSave').on('click', Save);
+    $('#companyForm').validate({
+        rules: {
+            nameField: { required: true },
+            innField: {
+                required: true,
+                digits: true,
+                minlength: 12,
+                maxlength: 12
+            },
+            addressField: { required: true }
+        },
+        messages: {
+            nameField: { required: "Поле является обязательным" },
+            innField: {
+                required: "Поле является обязательным",
+                digits: "Допустимы только цифры",
+                minlength: "Должно быть 12 цифр",
+                maxlength: "Вы ввели больше 12 цифр" 
+            },
+            addressField: { required: "Поле является обязательным" }
+        }
+    });
 
-$('#btnCancel').on('click', function () {
-    dialog.close();
-});
+
+    $('#btnSave').on('click', function () {
+        var validateRes = $('#companyForm').valid();
+        if (!validateRes) { // Not Valid
+            return false;
+        } else {
+            Save();
+        }
+    });
+
+    $('#btnCancel').on('click', function () {
+        dialog.close();
+
+        var $validationForm = $('#companyForm');
+        var $errLabels = $validationForm.find("label.error");
+        $errLabels.remove();
+
+        var $errItems = $validationForm.find(".error");
+        $errItems.removeClass("error");
+    });
 
     //var urlParams = new URLSearchParams(window.location.search);
     //var myParam = urlParams.get('id');
