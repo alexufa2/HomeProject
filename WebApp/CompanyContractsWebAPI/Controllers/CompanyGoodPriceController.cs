@@ -16,11 +16,11 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual IActionResult Create(CompanyGoodPriceDto item)
+        public virtual IActionResult Create(CreateCompanyGoodPriceDto item)
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CompanyGoodPriceDto>(item);
+                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
                 var dbResult = _repository.Create(dbItem);
                 return Ok(item);
             }
@@ -36,10 +36,10 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetAll();
-                var result = 
+                var result =
                     dbResult
-                    .Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
-                    .OrderBy(o=>o.Company_Id).ThenBy(o=>o.Good_Id);
+                    .Select(ConvertToDto)
+                    .OrderBy(o => o.Company_Id).ThenBy(o => o.Good_Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -54,9 +54,9 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetByCompanyId(companyId);
-                var result = 
-                    dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
-                    .OrderBy(o=>o.Good_Id);
+                var result =
+                    dbResult.Select(ConvertToDto)
+                    .OrderBy(o => o.Good_Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -71,8 +71,24 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetByGoodId(goodId);
-                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
-                    .OrderBy(o=>o.Company_Id);
+                var result = dbResult.Select(ConvertToDto)
+                    .OrderBy(o => o.Company_Id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet, Route("[controller]/GetNotExistGoodsByCompanyId")]
+        public virtual IActionResult GetNotExistGoodsByCompanyId(int companyId)
+        {
+            try
+            {
+                var dbResult = _repository.GetNotExistsByCompanyId(companyId);
+                var result = dbResult.Select(s => new ShortGoodDto { Id = s.Id, Name = s.Name })
+                    .OrderBy(o => o.Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -82,13 +98,13 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPut, Route("[controller]/Update")]
-        public virtual IActionResult Update(CompanyGoodPriceDto item)
+        public virtual IActionResult Update(CreateCompanyGoodPriceDto item)
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CompanyGoodPriceDto>(item);
+                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
                 var dbResult = _repository.Update(dbItem);
-                
+
                 if (dbResult == null)
                     return NotFound();
 
@@ -112,6 +128,13 @@ namespace CompanyContractsWebAPI.Controllers
             {
                 return Problem(ex.Message);
             }
+        }
+
+        private CompanyGoodPriceDto ConvertToDto(CompanyGoodPriceWithGoodName dbItem)
+        {
+            var dto = Helper.ConvertToDto<CompanyGoodPriceWithGoodName, CompanyGoodPriceDto>(dbItem);
+            dto.Good_Name = dbItem.GoodName;
+            return dto;
         }
     }
 }

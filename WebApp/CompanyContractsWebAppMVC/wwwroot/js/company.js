@@ -37,19 +37,19 @@ function Save() {
             grid.reload();
         })
         .fail(function () {
-            alert('Failed to save.');
+            alert('Ошибка при сохранении.');
             dialog.close();
         });
 }
 
 function Delete(e) {
     if (confirm('Вы уверены?')) {
-        varSendUrl = 'http://localhost:5188/Company/Delete?id=' + e.data.id;
+        var sendUrl = 'http://localhost:5188/Company/Delete?id=' + e.data.id;
 
         $.ajax(
             {
                 contentType: 'application/json',
-                url: varSendUrl,
+                url: SendUrl,
                 method: 'DELETE'
             }
         )
@@ -57,7 +57,7 @@ function Delete(e) {
                 grid.reload();
             })
             .fail(function () {
-                alert('Failed to delete.');
+                alert('Не удалось удалить запись..');
             });
     }
 }
@@ -142,9 +142,4 @@ $(document).ready(function () {
         $errItems.removeClass("error");
     });
 
-    //var urlParams = new URLSearchParams(window.location.search);
-    //var myParam = urlParams.get('id');
-
-    //if (myParam)
-    //    alert(myParam);
 });

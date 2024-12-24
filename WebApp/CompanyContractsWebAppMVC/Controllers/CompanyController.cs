@@ -13,5 +13,12 @@ namespace CompanyContractsWebAppMVC.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public ActionResult SetViewData(string value)
+        {
+            ViewData["Title"] = value;
+            return new EmptyResult();
+        }
     }
 }

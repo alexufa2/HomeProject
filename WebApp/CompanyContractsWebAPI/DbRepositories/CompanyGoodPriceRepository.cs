@@ -51,19 +51,41 @@ namespace CompanyContractsWebAPI.DbRepositories
             return true;
         }
 
-        public IEnumerable<CompanyGoodPrice> GetAll()
+        public IEnumerable<CompanyGoodPriceWithGoodName> GetAll()
         {
-            return _applicationContext.CompanyGoodPrices;
+            return _applicationContext.CompanyGoodPrices
+                .Join(
+                _applicationContext.Goods,
+                cgp=>cgp.Good_Id,
+                g=>g.Id,
+                (cgp, g)=> new CompanyGoodPriceWithGoodName 
+                { 
+                    Company_Id = cgp.Company_Id,
+                    Good_Id = cgp.Good_Id,
+                    GoodName = g.Name,
+                    Price = cgp.Price
+                });
         }
 
-        public IEnumerable<CompanyGoodPrice> GetByCompanyId(int companyId)
+        public IEnumerable<CompanyGoodPriceWithGoodName> GetByCompanyId(int companyId)
         {
-            return _applicationContext.CompanyGoodPrices.Where(w => w.Company_Id == companyId);
+            return GetAll().Where(w => w.Company_Id == companyId);
         }
 
-        public IEnumerable<CompanyGoodPrice> GetByGoodId(int goodId)
+        public IEnumerable<CompanyGoodPriceWithGoodName> GetByGoodId(int goodId)
         {
-            return _applicationContext.CompanyGoodPrices.Where(w => w.Good_Id == goodId);
+            return GetAll().Where(w => w.Good_Id == goodId);
+        }
+
+        public IEnumerable<Good> GetNotExistsByCompanyId(int companyId)
+        {
+            int[] existsCompanyGoods =
+                _applicationContext.CompanyGoodPrices
+                .Where(w=>w.Company_Id == companyId)
+                .Select(s => s.Good_Id)
+                .ToArray();
+
+            return _applicationContext.Goods.Where(w => !existsCompanyGoods.Contains(w.Id));
         }
     }
 }

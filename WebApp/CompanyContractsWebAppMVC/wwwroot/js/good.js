@@ -44,12 +44,12 @@ function Save() {
 
 function Delete(e) {
     if (confirm('Вы уверены?')) {
-        varSendUrl = 'http://localhost:5188/Good/Delete?id=' + e.data.id;
+        var sendUrl = 'http://localhost:5188/Good/Delete?id=' + e.data.id;
 
         $.ajax(
             {
                 contentType: 'application/json',
-                url: varSendUrl,
+                url: sendUrl,
                 method: 'DELETE'
             }
         )
@@ -57,7 +57,7 @@ function Delete(e) {
                 grid.reload();
             })
             .fail(function () {
-                alert('Ошибка при удалении.');
+                alert('Не удалось удалить запись.');
             });
     }
 }
@@ -92,9 +92,35 @@ $(document).ready(function () {
         dialog.open('Добавить товар');
     });
 
-    $('#btnSave').on('click', Save);
+    $('#goodForm').validate({
+        rules: {
+            nameField: { required: true },
+            measureUnitField: { required: true }
+        },
+        messages: {
+            nameField: { required: "Поле является обязательным" },
+            measureUnitField: { required: "Поле является обязательным" }
+        }
+    });
+
+
+    $('#btnSave').on('click', function () {
+        var validateRes = $('#goodForm').valid();
+        if (!validateRes) { // Not Valid
+            return false;
+        } else {
+            Save();
+        }
+    });
 
     $('#btnCancel').on('click', function () {
         dialog.close();
+
+        var $validationForm = $('#goodForm');
+        var $errLabels = $validationForm.find("label.error");
+        $errLabels.remove();
+
+        var $errItems = $validationForm.find(".error");
+        $errItems.removeClass("error");
     });
 });

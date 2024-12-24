@@ -20,21 +20,21 @@
 
     <div id="dialog" style="display: none">
         <input type="hidden" id="ID" />
-        <form>
+        <form id="goodForm">
             <div class="form-group">
                 <label for="Name">Наименование</label>
-                <input type="text" class="form-control" id="Name">
+                <input type="text" class="form-control" id="Name" name="nameField">
             </div>
             <div class="form-group">
                 <label for="Inn">Описание</label>
-                <input type="text" class="form-control" id="Description" />
+                <input type="text" class="form-control" id="Description" name="descriptionField" />
             </div>
             <div class="form-group">
                 <label for="Address">Единица измерения</label>
-                <input type="text" class="form-control" id="Measurement_Unit" />
+                <input type="text" class="form-control" id="Measurement_Unit" name="measureUnitField" />
             </div>
-            <button type="button" id="btnSave" class="btn btn-default">Save</button>
-            <button type="button" id="btnCancel" class="btn btn-default">Cancel</button>
+            <button type="button" id="btnSave" class="btn btn-default">Сохранить</button>
+            <button type="button" id="btnCancel" class="btn btn-default">Отменить</button>
         </form>
     </div>
 

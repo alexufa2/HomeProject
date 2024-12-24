@@ -1,28 +1,72 @@
-var grid, dialog, isEdit;
+var grid, dialog, isEdit, company;
 
+function FillGoodsDdl() {
+    var companyId = $('#CompanyId').val();
+    FillGoodsDdlByCompanyId(companyId);
+}
+
+function FillGoodsDdlByCompanyId(companyId) {
+    var sendUrl = 'http://localhost:5188/CompanyGoodPrice/GetNotExistGoodsByCompanyId?companyId=' + companyId;
+    $.ajax(
+        {
+            contentType: 'application/json',
+            url: sendUrl,
+            method: 'GET'
+        }
+    )
+        .done(function (data) {
+            if (data.length === 0) {
+                $('#btnAdd').prop('disabled', 'disabled');
+            }
+            else {
+                $('#btnAdd').prop('disabled', false);
+            }
+
+            data.unshift({ id: '', name: '' });
+
+            $ddl = $('#GoodsDdl');
+            $ddl.children('option').remove();
+            $ddl.prop('disabled', false);
+
+            $.each(data, function (i, item) {
+                $ddl.append($('<option>', {
+                    value: item.id,
+                    text: item.name
+                }));
+            });
+        })
+        .fail(function () {
+            alert('Невозможно загрузить данные по товарам компании');
+        });
+}
 function Edit(e) {
     isEdit = true;
-    $('#ID').val(e.data.id);
-    $('#Name').val(e.data.record.name);
-    $('#Inn').val(e.data.record.inn);
-    $('#Address').val(e.data.record.address);
+    var $ddl = $('#GoodsDdl');
+
+    $ddl.append($('<option>', {
+        value: e.data.record.good_Id,
+        text: e.data.record.good_Name
+    }));
+
+    $ddl.val(e.data.record.good_Id).change();
+    $ddl.prop('disabled', 'disabled');
+
+    $('#Price').val(e.data.record.price);
     dialog.open('Редактировать компанию');
 }
 
 function Save() {
     var record = {
-        ID: 0,
-        Name: $('#Name').val(),
-        Inn: $('#Inn').val(),
-        Address: $('#Address').val()
+        Company_Id: $('#CompanyId').val(),
+        Good_Id: $('#GoodsDdl').find(":selected").val(),
+        Price: $('#Price').val()
     };
-    var sendUrl = 'http://localhost:5188/Company/Create';
+    var sendUrl = 'http://localhost:5188/CompanyGoodPrice/Create';
     var sendMethod = 'POST';
 
     if (isEdit) {
-        sendUrl = 'http://localhost:5188/Company/Update';
+        sendUrl = 'http://localhost:5188/CompanyGoodPrice/Update';
         sendMethod = 'PUT';
-        record.ID = parseInt($('#ID').val());
     }
 
     $.ajax(
@@ -35,78 +79,132 @@ function Save() {
         .done(function () {
             dialog.close();
             grid.reload();
+            FillGoodsDdl();
         })
         .fail(function () {
-            alert('Failed to save.');
+            alert('Ошибка при сохранении.');
             dialog.close();
         });
 }
 
 function Delete(e) {
     if (confirm('Вы уверены?')) {
-        varSendUrl = 'http://localhost:5188/Company/Delete?id=' + e.data.id;
+        var companyId = $('#CompanyId').val();
+        var sendUrl = 'http://localhost:5188/CompanyGoodPrice/Delete?companyId=' + companyId + '&goodId=' + e.data.record.good_Id;
 
         $.ajax(
             {
                 contentType: 'application/json',
-                url: varSendUrl,
+                url: sendUrl,
                 method: 'DELETE'
             }
         )
             .done(function () {
                 grid.reload();
+                FillGoodsDdl();
             })
             .fail(function () {
-                alert('Failed to delete.');
+                alert('Не удалось удалить запись.');
             });
     }
 }
 
-function RedirectToCompanyGoods(e) {
-    window.location.replace("/Company/Goods?companyId=" + e.data.id);
-}
 
 $(document).ready(function () {
+    // данные по Id компании
+    var urlParams = new URLSearchParams(window.location.search);
+    var companyId = urlParams.get('companyId');
+    $('#CompanyId').val(companyId);
+
+    var sendUrl = 'http://localhost:5188/Company/GetById?id=' + companyId;
+    $.ajax(
+        {
+            contentType: 'application/json',
+            url: sendUrl,
+            method: 'GET'
+        }
+    )
+        .done(function (data) {
+            company = data;
+            $('#h3').text('Товары компании ' + company.name + ' ' + company.address);
+            var newTitile = 'Товары компании ' + company.name;
+            $(document).prop('title', newTitile);
+        })
+        .fail(function () {
+            alert('Невозможно загрузить данные по компании');
+        });
+
+    FillGoodsDdlByCompanyId(companyId);
+
     grid = $('#grid').grid({
-        primaryKey: 'id',
-        dataSource: 'http://localhost:5188/Company/GetAll',
+        //primaryKey: 'id',
+        dataSource: 'http://localhost:5188/CompanyGoodPrice/GetByCompanyId?companyId=' + companyId,
         uiLibrary: 'bootstrap',
         columns: [
-            { field: 'id', title: 'ID', width: 45 },
-            { field: 'name', title: 'Наименование', sortable: true },
-            { field: 'inn', title: 'ИНН', sortable: true },
-            { field: 'address', title: 'Адрес', sortable: true },
-            { title: '', field: '', width: 34, type: 'icon', icon: 'glyphicon-list-alt', tooltip: 'Посмотреть товары', events: { 'click': RedirectToCompanyGoods } },
-        { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
-        { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
+            { field: 'company_Id', title: 'Company_Id', hidden: true },
+            { field: 'good_Id', title: 'Good_Id', hidden: true },
+            { field: 'good_Name', title: 'Наименование товара', sortable: true },
+            { field: 'price', title: 'Стоимость за единицу', sortable: true },
+            { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
+            { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
 
-dialog = $('#dialog').dialog({
-    uiLibrary: 'bootstrap',
-    autoOpen: false,
-    resizable: false,
-    modal: true
-});
-$('#btnAdd').on('click', function () {
-    isEdit = false;
-    $('#ID').val('');
-    $('#Name').val('');
-    $('#Inn').val('');
-    $('#Address').val('');
-    dialog.open('Добавить компанию');
-});
+    dialog = $('#dialog').dialog({
+        uiLibrary: 'bootstrap',
+        autoOpen: false,
+        resizable: false,
+        modal: true
+    });
+    $('#btnAdd').on('click', function () {
+        isEdit = false;
+        $('#GoodsDdl').val('').change();
+        $('#Price').val('');
+        dialog.open('Добавить товар с ценой');
+    });
 
-$('#btnSave').on('click', Save);
+    jQuery.validator.addMethod(
+        "money",
+        function (value, element) {
+            var isValidMoney = /^\d{0,5}(\.\d{0,2})?$/.test(value);
+            var isNotEmpty = (value !== "");
+            return isNotEmpty && isValidMoney;
+        },
+        "Введиту стоимость товара через '.'"
+    );
 
-$('#btnCancel').on('click', function () {
-    dialog.close();
-});
+    $('#companyGoodsForm').validate({
+        rules: {
+            priceField: { money: true },
+            goodsDdlField: { required: true }
+        },
+        messages: {
+            priceField: "Введиту стоимость товара через '.'",
+            goodsDdlField: "Выберите товар из списка"
+        }
+    });
 
-    //var urlParams = new URLSearchParams(window.location.search);
-    //var myParam = urlParams.get('id');
 
-    //if (myParam)
-    //    alert(myParam);
+    $('#btnSave').on('click', function () {
+        var validateRes = $('#companyGoodsForm').valid();
+        if (!validateRes) { // Not Valid
+            return false;
+        }
+        else {
+            Save();
+        }
+    });
+
+    $('#btnCancel').on('click', function () {
+        dialog.close();
+
+        var $validationForm = $('#companyGoodsForm');
+        var $errLabels = $validationForm.find("label.error");
+        $errLabels.remove();
+
+        var $errItems = $validationForm.find(".error");
+        $errItems.removeClass("error");
+        FillGoodsDdl();
+    });
 });

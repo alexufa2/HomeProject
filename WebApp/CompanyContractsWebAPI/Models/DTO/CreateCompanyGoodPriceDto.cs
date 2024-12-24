@@ -1,10 +1,9 @@
 ﻿namespace CompanyContractsWebAPI.Models.DTO
 {
-    public class CompanyGoodPriceDto
+    public class CreateCompanyGoodPriceDto
     {
         public int Company_Id { get; set; }
         public int Good_Id { get; set; }
-        public string Good_Name { get; set; }
         public decimal Price { get; set; }
     }
 }
