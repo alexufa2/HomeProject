@@ -1,6 +1,4 @@
-﻿using CompanyContractsWebAPI.Models.DB;
-
-namespace CompanyContractsWebAPI.Models.DTO
+﻿namespace CompanyContractsWebAPI.Models.DTO
 {
     public class GoodDto : IEntityWithId
     {

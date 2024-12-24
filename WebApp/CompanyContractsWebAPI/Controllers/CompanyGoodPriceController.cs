@@ -36,7 +36,10 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetAll();
-                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
+                var result = 
+                    dbResult
+                    .Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
+                    .OrderBy(o=>o.Company_Id).ThenBy(o=>o.Good_Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -51,7 +54,9 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetByCompanyId(companyId);
-                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
+                var result = 
+                    dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
+                    .OrderBy(o=>o.Good_Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -66,7 +71,8 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetByGoodId(goodId);
-                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>);
+                var result = dbResult.Select(Helper.ConvertToDto<CompanyGoodPrice, CompanyGoodPriceDto>)
+                    .OrderBy(o=>o.Company_Id);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Товары";
+}
+
+
+<h3>Товары</h3>
+<body>
+    <div class="container-full">
+        <div class="row">
+            <div class="col-xs-4">
+                <button id="btnAdd" type="button" class="btn btn-default">Добавить</button>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <div class="col-xs-12">
+                <table id="grid"></table>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialog" style="display: none">
+        <input type="hidden" id="ID" />
+        <form>
+            <div class="form-group">
+                <label for="Name">Наименование</label>
+                <input type="text" class="form-control" id="Name">
+            </div>
+            <div class="form-group">
+                <label for="Inn">Описание</label>
+                <input type="text" class="form-control" id="Description" />
+            </div>
+            <div class="form-group">
+                <label for="Address">Единица измерения</label>
+                <input type="text" class="form-control" id="Measurement_Unit" />
+            </div>
+            <button type="button" id="btnSave" class="btn btn-default">Save</button>
+            <button type="button" id="btnCancel" class="btn btn-default">Cancel</button>
+        </form>
+    </div>
+
+    <script src="~/js/good.js" asp-append-version="true"></script>
+</body>
+

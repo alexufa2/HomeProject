@@ -1,9 +1,6 @@
 ﻿using CompanyContractsWebAPI.DbRepositories;
 using CompanyContractsWebAPI.Models;
-using CompanyContractsWebAPI.Models.DB;
-using CompanyContractsWebAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.CodeAnalysis;
 
 namespace CompanyContractsWebAPI.Controllers
 {
@@ -25,7 +22,7 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<Tdb, Udto>(item);
+                var dbItem = ConvertFromDto(item);
                 dbItem.Id = 0;
                 var dbResult = _repository.Create(dbItem);
                 item.Id = dbResult.Id;
@@ -43,10 +40,10 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetById(id);
-                if(dbResult == null)
+                if (dbResult == null)
                     return NotFound();
 
-                var result = Helper.ConvertToDto<Tdb, Udto>(dbResult);
+                var result = ConvertToDto(dbResult);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -61,7 +58,7 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbResult = _repository.GetAll();
-                var result = dbResult.Select(Helper.ConvertToDto<Tdb, Udto>);
+                var result = dbResult.Select(ConvertToDto).OrderBy(o => o.Id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -75,12 +72,12 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<Tdb, Udto>(item);
+                var dbItem = ConvertFromDto(item);
                 var dbResult = _repository.Update(dbItem);
-               
-                if(dbResult == null)
+
+                if (dbResult == null)
                     return NotFound();
-               
+
                 return Ok(item);
             }
             catch (Exception ex)
@@ -103,5 +100,14 @@ namespace CompanyContractsWebAPI.Controllers
             }
         }
 
+        protected virtual Tdb ConvertFromDto(Udto item)
+        {
+            return Helper.ConvertFromDto<Tdb, Udto>(item);
+        }
+
+        protected virtual Udto ConvertToDto(Tdb item)
+        {
+            return Helper.ConvertToDto<Tdb, Udto>(item);
+        }
     }
 }
