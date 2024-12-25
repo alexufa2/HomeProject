@@ -51,28 +51,35 @@ namespace CompanyContractsWebAPI.DbRepositories
             return true;
         }
 
-        public IEnumerable<CompanyGoodPriceWithGoodName> GetAll()
+        public IEnumerable<CompanyGoodPriceWitNames> GetAll()
         {
             return _applicationContext.CompanyGoodPrices
                 .Join(
-                _applicationContext.Goods,
-                cgp=>cgp.Good_Id,
-                g=>g.Id,
-                (cgp, g)=> new CompanyGoodPriceWithGoodName 
-                { 
-                    Company_Id = cgp.Company_Id,
-                    Good_Id = cgp.Good_Id,
-                    GoodName = g.Name,
-                    Price = cgp.Price
-                });
+                    _applicationContext.Goods,
+                   cgp => cgp.Good_Id,
+                   good => good.Id,
+                   (cgp, good) => new { cgp, good }
+                )
+               .Join(
+                    _applicationContext.Companyes,
+                    combo => combo.cgp.Company_Id,
+                    c =>c.Id,
+                    (combo, c)=> new CompanyGoodPriceWitNames
+                    {
+                        Company_Id = combo.cgp.Company_Id,
+                        Company_Name = c.Name,
+                        Good_Id= combo.cgp.Good_Id,
+                        Good_Name= combo.good.Name,
+                        Price = combo.cgp.Price
+                    }); 
         }
 
-        public IEnumerable<CompanyGoodPriceWithGoodName> GetByCompanyId(int companyId)
+        public IEnumerable<CompanyGoodPriceWitNames> GetByCompanyId(int companyId)
         {
             return GetAll().Where(w => w.Company_Id == companyId);
         }
 
-        public IEnumerable<CompanyGoodPriceWithGoodName> GetByGoodId(int goodId)
+        public IEnumerable<CompanyGoodPriceWitNames> GetByGoodId(int goodId)
         {
             return GetAll().Where(w => w.Good_Id == goodId);
         }

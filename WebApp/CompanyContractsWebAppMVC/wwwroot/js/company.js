@@ -73,9 +73,9 @@ $(document).ready(function () {
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
-            { field: 'name', title: 'Наименование', sortable: true },
-            { field: 'inn', title: 'ИНН', sortable: true },
-            { field: 'address', title: 'Адрес', sortable: true },
+            { field: 'name', title: 'Наименование' },
+            { field: 'inn', title: 'ИНН'},
+            { field: 'address', title: 'Адрес'},
             { title: '', field: '', width: 34, type: 'icon', icon: 'glyphicon-list-alt', tooltip: 'Посмотреть товары', events: { 'click': RedirectToCompanyGoods } },
             { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
             { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }

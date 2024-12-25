@@ -137,14 +137,13 @@ $(document).ready(function () {
     FillGoodsDdlByCompanyId(companyId);
 
     grid = $('#grid').grid({
-        //primaryKey: 'id',
         dataSource: 'http://localhost:5188/CompanyGoodPrice/GetByCompanyId?companyId=' + companyId,
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'company_Id', title: 'Company_Id', hidden: true },
             { field: 'good_Id', title: 'Good_Id', hidden: true },
-            { field: 'good_Name', title: 'Наименование товара', sortable: true },
-            { field: 'price', title: 'Стоимость за единицу', sortable: true },
+            { field: 'good_Name', title: 'Наименование товара'},
+            { field: 'price', title: 'Стоимость за единицу' },
             { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
             { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
         ],

@@ -68,8 +68,8 @@ $(document).ready(function () {
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
-            { field: 'name', title: 'Наименование', sortable: true },
-            { field: 'description', title: 'Описание', sortable: true },
+            { field: 'name', title: 'Наименование' },
+            { field: 'description', title: 'Описание' },
             { field: 'measurement_Unit', title: 'Единица измерения', sortable: true },
             { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
             { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }

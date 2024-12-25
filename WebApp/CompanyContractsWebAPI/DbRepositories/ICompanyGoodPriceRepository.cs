@@ -6,10 +6,10 @@ namespace CompanyContractsWebAPI.DbRepositories
     {
         CompanyGoodPrice Create(CompanyGoodPrice item);
         CompanyGoodPrice Update(CompanyGoodPrice item);
-        IEnumerable<CompanyGoodPriceWithGoodName> GetAll();
-        IEnumerable<CompanyGoodPriceWithGoodName> GetByCompanyId(int companyId);
+        IEnumerable<CompanyGoodPriceWitNames> GetAll();
+        IEnumerable<CompanyGoodPriceWitNames> GetByCompanyId(int companyId);
         IEnumerable<Good> GetNotExistsByCompanyId(int companyId);
-        IEnumerable<CompanyGoodPriceWithGoodName> GetByGoodId(int goodId);
+        IEnumerable<CompanyGoodPriceWitNames> GetByGoodId(int goodId);
 
         bool Delete(int companyId, int goodId);
 
