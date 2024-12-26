@@ -71,9 +71,15 @@ namespace CompanyContractsWebAPI.DbRepositories
                 NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Money
             };
 
-            var result = _applicationContext.Database.ExecuteSqlRaw(
-                "select dbo.update_contract_done(@id, @contract_Id, @done_amount)",
-                idParam, contractIdParam, doneAmountParam);
+            var result = _applicationContext.Set<IntReturn>().FromSqlRaw(
+                "select dbo.update_contract_done(@id, @contract_Id, @done_amount) as Value",
+                idParam, contractIdParam, doneAmountParam)
+                .AsEnumerable()
+                .First().Value;
+
+            //var result = _applicationContext.Database.ExecuteSqlRaw(
+            //    "select dbo.update_contract_done(@id, @contract_Id, @done_amount) as Value",
+            //    idParam, contractIdParam, doneAmountParam);
 
             return item;
         }

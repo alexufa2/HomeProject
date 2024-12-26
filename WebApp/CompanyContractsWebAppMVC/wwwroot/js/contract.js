@@ -63,6 +63,11 @@ function CancelContract(e) {
         return;
     }
 
+    if (e.data.record.status === 'Finished') {
+        alert('Контракт уже завершен его нельзя отменить');
+        return;
+    }
+
     if (confirm('Вы уверены?')) {
         var sendUrl = 'http://localhost:5188/Contract/Cancel?Id=' + e.data.record.id;
 
@@ -83,7 +88,7 @@ function CancelContract(e) {
 }
 
 function RedirectToContractDoneList(e) {
-    window.location.replace("/Contract/DoneList?contractId=" + e.data.id);
+   // window.location.replace("/Contract/DoneList?contractId=" + e.data.id);
 }
 
 function FillCompanyDdl(goodId) {

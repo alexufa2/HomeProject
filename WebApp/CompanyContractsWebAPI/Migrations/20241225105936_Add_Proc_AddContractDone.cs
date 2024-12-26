@@ -16,19 +16,27 @@ namespace CompanyContractsWebAPI.Migrations
 	OUT new_id integer)
 LANGUAGE 'plpgsql'
 AS $BODY$
+
+
+
 DECLARE
     done_total money := 0;
 	contract_total_sum money := 0;
+	contract_status text :='';
 BEGIN
 	new_id := -1;
-
-	SELECT c.""Total_Sum"" INTO contract_total_sum
+	
+	SELECT c.""Total_Sum"", c.""Status"" INTO contract_total_sum, contract_status
 	FROM dbo.contract c WHERE c.""Id"" = contract_id;
+	
+	IF contract_status ='Finished' or contract_status = 'Canceled' THEN
+		Return;
+	END IF;
 
 	SELECT SUM(cd.""Done_Amount"") INTO done_total 
 	FROM dbo.contract_done cd WHERE cd.""Contract_Id"" = contract_id;
 
-	IF (contract_total_sum - done_total) >= done_amount THEN
+	IF ((contract_total_sum - done_total) >= done_amount OR done_total IS NULL) AND done_amount <= contract_total_sum  IS NULL THEN
 		
 		INSERT INTO dbo.contract_done (""Contract_Id"", ""Done_Amount"")
 		Values (contract_id, done_amount)
@@ -38,8 +46,14 @@ BEGIN
     	FROM dbo.contract_done cd
     	WHERE cd.""Contract_Id"" = contract_id;
 
+		contract_status := 'Started';
+
+		IF done_total = contract_total_sum THEN
+			contract_status := 'Finished';
+		END IF;
+
 		UPDATE dbo.contract 
-		SET ""Done_Sum"" = done_total
+		SET ""Done_Sum"" = done_total, ""Status"" = contract_status
 		WHERE ""Id"" = contract_id;
 	End IF;
 

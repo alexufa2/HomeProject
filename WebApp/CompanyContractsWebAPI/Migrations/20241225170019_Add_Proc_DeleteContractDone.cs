@@ -14,13 +14,24 @@ namespace CompanyContractsWebAPI.Migrations
 	IN cdone_id integer)
 LANGUAGE 'plpgsql'
 AS $BODY$
+
+
+
 DECLARE
 	contract_id integer :=0;
     done_total money := 0;
+	contract_status text :='';
 BEGIN
 		SELECT ""Contract_Id"" INTO contract_id
 		FROM dbo.contract_done
 		WHERE ""Id"" = cdone_id;
+
+		SELECT c.""Status"" INTO contract_status
+		FROM dbo.contract c WHERE c.""Id"" = contract_id;
+
+		IF contract_status ='Finished' or contract_status = 'Canceled' THEN
+			return;
+		END IF;
 		
 		DELETE FROM dbo.contract_done
 		WHERE ""Id"" = cdone_id;
@@ -29,8 +40,15 @@ BEGIN
     	FROM dbo.contract_done cd
     	WHERE cd.""Contract_Id"" = contract_id;
 
+		contract_status := 'Started';
+
+		IF done_total = 0 OR done_total IS NULL THEN
+			contract_status := 'New';
+			done_total := 0;
+		END IF;
+
 		UPDATE dbo.contract 
-		SET ""Done_Sum"" = done_total
+		SET ""Done_Sum"" = done_total, ""Status"" = contract_status 
 		WHERE ""Id"" = contract_id;
 
 EXCEPTION

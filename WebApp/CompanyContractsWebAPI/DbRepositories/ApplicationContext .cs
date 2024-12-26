@@ -24,6 +24,7 @@ namespace CompanyContractsWebAPI.DbRepositories
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasDefaultSchema(Schema);
+            modelBuilder.Entity<IntReturn>().HasNoKey();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

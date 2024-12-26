@@ -19,18 +19,24 @@ namespace CompanyContractsWebAPI.Migrations
     COST 100
     VOLATILE PARALLEL UNSAFE
 AS $BODY$
+
 DECLARE
 	res_id integer :=-1;
     done_total money := 0;
 	contract_total_sum money := 0;
+	contract_status text :='';
 BEGIN
-	SELECT c.""Total_Sum"" INTO contract_total_sum
+	SELECT c.""Total_Sum"", c.""Status"" INTO contract_total_sum, contract_status
 	FROM dbo.contract c WHERE c.""Id"" = contract_id;
 
+	IF contract_status ='Finished' or contract_status = 'Canceled' THEN
+		return res_id;
+	END IF;
+	
 	SELECT SUM(cd.""Done_Amount"") INTO done_total 
 	FROM dbo.contract_done cd WHERE cd.""Contract_Id"" = contract_id and cd.""Id"" != cdone_id;
-
-	IF (contract_total_sum - done_total) >= done_amount THEN
+	
+	IF ((contract_total_sum - done_total) >= done_amount OR done_total IS NULL) AND done_amount <= contract_total_sum THEN
 		
 		UPDATE dbo.contract_done
 		SET ""Done_Amount"" = done_amount
@@ -40,8 +46,14 @@ BEGIN
     	FROM dbo.contract_done cd
     	WHERE cd.""Contract_Id"" = contract_id;
 
+		contract_status := 'Started';
+
+		IF done_total = contract_total_sum THEN
+			contract_status := 'Finished';
+		END IF;
+
 		UPDATE dbo.contract 
-		SET ""Done_Sum"" = done_total
+		SET ""Done_Sum"" = done_total, ""Status"" = contract_status
 		WHERE ""Id"" = contract_id;
 
 		res_id := 1;
