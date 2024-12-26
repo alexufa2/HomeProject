@@ -49,7 +49,7 @@ function Delete(e) {
         $.ajax(
             {
                 contentType: 'application/json',
-                url: SendUrl,
+                url: sendUrl,
                 method: 'DELETE'
             }
         )
@@ -62,10 +62,6 @@ function Delete(e) {
     }
 }
 
-function RedirectToCompanyGoods(e) {
-    window.location.replace("/Company/Goods?companyId=" + e.data.id);
-}
-
 $(document).ready(function () {
     grid = $('#grid').grid({
         primaryKey: 'id',
@@ -76,7 +72,11 @@ $(document).ready(function () {
             { field: 'name', title: 'Наименование' },
             { field: 'inn', title: 'ИНН'},
             { field: 'address', title: 'Адрес'},
-            { title: '', field: '', width: 34, type: 'icon', icon: 'glyphicon-list-alt', tooltip: 'Посмотреть товары', events: { 'click': RedirectToCompanyGoods } },
+            {
+                title: '', field: '', width: 34,
+                tmpl: '<a style="color: inherit;" href="/Company/Goods?companyId={id}"><span class="glyphicon-list-alt glyphicon" style="cursor: pointer;"></span></a>',
+                tooltip: 'Посмотреть товары'
+            },
             { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
             { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
         ],

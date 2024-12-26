@@ -17,8 +17,6 @@ namespace CompanyContractsWebAPI.Migrations
 LANGUAGE 'plpgsql'
 AS $BODY$
 
-
-
 DECLARE
     done_total money := 0;
 	contract_total_sum money := 0;
@@ -36,7 +34,7 @@ BEGIN
 	SELECT SUM(cd.""Done_Amount"") INTO done_total 
 	FROM dbo.contract_done cd WHERE cd.""Contract_Id"" = contract_id;
 
-	IF ((contract_total_sum - done_total) >= done_amount OR done_total IS NULL) AND done_amount <= contract_total_sum  IS NULL THEN
+	IF ((contract_total_sum - done_total) >= done_amount OR done_total IS NULL) AND done_amount <= contract_total_sum THEN
 		
 		INSERT INTO dbo.contract_done (""Contract_Id"", ""Done_Amount"")
 		Values (contract_id, done_amount)

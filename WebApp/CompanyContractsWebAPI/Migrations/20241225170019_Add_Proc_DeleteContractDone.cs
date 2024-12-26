@@ -15,8 +15,6 @@ namespace CompanyContractsWebAPI.Migrations
 LANGUAGE 'plpgsql'
 AS $BODY$
 
-
-
 DECLARE
 	contract_id integer :=0;
     done_total money := 0;

@@ -87,8 +87,24 @@ function CancelContract(e) {
     }
 }
 
-function RedirectToContractDoneList(e) {
-   // window.location.replace("/Contract/DoneList?contractId=" + e.data.id);
+function Delete(e) {
+    if (confirm('Вы уверены?')) {
+        var sendUrl = 'http://localhost:5188/Contract/Delete?id=' + e.data.id;
+
+        $.ajax(
+            {
+                contentType: 'application/json',
+                url: sendUrl,
+                method: 'DELETE'
+            }
+        )
+            .done(function () {
+                grid.reload();
+            })
+            .fail(function () {
+                alert('Не удалось удалить запись..');
+            });
+    }
 }
 
 function FillCompanyDdl(goodId) {
@@ -153,8 +169,12 @@ $(document).ready(function () {
             { field: 'done_Sum', title: 'Сумма исполнения' },
             { field: 'status', hidden: true },
             { field: 'statusName', title: 'Статус' },
-            { title: '', field: '', width: 34, type: 'icon', icon: 'glyphicon-calendar', tooltip: 'Посмотреть исполнения', events: { 'click': RedirectToContractDoneList } },
-            { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-ban-circle', tooltip: 'Отменить контракт', events: { 'click': CancelContract } }
+            { title: '', field: '', width: 34, 
+                tmpl: '<a style="color: inherit;" href="/Contract/DoneList?contractId={id}"><span class="glyphicon-calendar glyphicon" style="cursor: pointer;"></span></a>',
+                tooltip: 'Посмотреть исполнения'
+            },
+            { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-ban-circle', tooltip: 'Отменить контракт', events: { 'click': CancelContract } },
+            { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });

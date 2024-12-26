@@ -11,5 +11,7 @@ namespace CompanyContractsWebAPI.DbRepositories
         ContractWithNames GetById(int id);
 
         Contract UpdateStatus(int id, string status);
+
+        bool Delete(int id);
     }
 }

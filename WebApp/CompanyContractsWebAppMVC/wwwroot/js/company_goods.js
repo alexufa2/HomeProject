@@ -89,8 +89,7 @@ function Save() {
 
 function Delete(e) {
     if (confirm('Вы уверены?')) {
-        var companyId = $('#CompanyId').val();
-        var sendUrl = 'http://localhost:5188/CompanyGoodPrice/Delete?companyId=' + companyId + '&goodId=' + e.data.record.good_Id;
+        var sendUrl = 'http://localhost:5188/CompanyGoodPrice/Delete?companyId=' + e.data.record.company_Id + '&goodId=' + e.data.record.good_Id;
 
         $.ajax(
             {

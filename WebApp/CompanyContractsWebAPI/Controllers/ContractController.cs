@@ -82,6 +82,20 @@ namespace CompanyContractsWebAPI.Controllers
             }
         }
 
+        [HttpDelete, Route("[controller]/Delete")]
+        public virtual IActionResult Delete(int id)
+        {
+            try
+            {
+                var result = _repository.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
 
         private ContractDto ConvertToDto(ContractWithNames item)
         {

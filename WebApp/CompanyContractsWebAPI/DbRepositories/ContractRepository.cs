@@ -1,5 +1,4 @@
-﻿using CompanyContractsWebAPI.Migrations;
-using CompanyContractsWebAPI.Models.DB;
+﻿using CompanyContractsWebAPI.Models.DB;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
@@ -63,6 +62,17 @@ namespace CompanyContractsWebAPI.DbRepositories
             originalItem.Status = status;
             _applicationContext.SaveChanges();
             return originalItem;
+        }
+
+        public bool Delete(int id)
+        {
+            var originalItem = _applicationContext.Contracts.FirstOrDefault(f => f.Id == id);
+            if (originalItem == null)
+                return false;
+
+            _applicationContext.Contracts.Remove(originalItem);
+            _applicationContext.SaveChanges();
+            return true;
         }
     }
 }

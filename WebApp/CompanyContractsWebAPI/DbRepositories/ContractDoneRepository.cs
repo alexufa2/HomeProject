@@ -5,7 +5,7 @@ using System.Data.Common;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
-    public class ContractDoneRepository : BaseRepository<ContractDone>
+    public class ContractDoneRepository : BaseRepository<ContractDone>, IContractDoneRepository
     {
         public ContractDoneRepository(ApplicationContext applicationContext) :
             base(applicationContext)
@@ -21,7 +21,7 @@ namespace CompanyContractsWebAPI.DbRepositories
                 {
                     cmd.CommandText = "dbo.add_contract_done";
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    
+
                     var contractid = new NpgsqlParameter("contract_id", NpgsqlTypes.NpgsqlDbType.Integer);
                     contractid.Value = item.Contract_Id;
                     cmd.Parameters.Add(contractid);
@@ -51,8 +51,9 @@ namespace CompanyContractsWebAPI.DbRepositories
 
         public override ContractDone Update(ContractDone item)
         {
-            var idParam = new NpgsqlParameter() {
-                ParameterName ="@id",
+            var idParam = new NpgsqlParameter()
+            {
+                ParameterName = "@id",
                 Value = item.Id,
                 NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Integer
             };
@@ -96,6 +97,11 @@ namespace CompanyContractsWebAPI.DbRepositories
             _applicationContext.Database.ExecuteSqlRaw("CALL dbo.delete_contract_done(@id)", idParam);
 
             return true;
+        }
+
+        public IEnumerable<ContractDone> GetByContractId(int contractId)
+        {
+            return _applicationContext.ContractDones.Where(w => w.Contract_Id == contractId);
         }
     }
 }

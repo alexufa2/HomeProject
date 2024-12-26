@@ -28,7 +28,7 @@ builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<IRepository<Good>, GoodRepository>();
 builder.Services.AddScoped<ICompanyGoodPriceRepository, CompanyGoodPriceRepository>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
-builder.Services.AddScoped<IRepository<ContractDone>, ContractDoneRepository>();
+builder.Services.AddScoped<IContractDoneRepository, ContractDoneRepository>();
 
 var app = builder.Build();
 
