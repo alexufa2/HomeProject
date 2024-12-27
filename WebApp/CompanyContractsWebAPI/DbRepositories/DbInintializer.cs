@@ -1,4 +1,5 @@
 ﻿using CompanyContractsWebAPI.Models.DB;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyContractsWebAPI.DbRepositories
 {
@@ -6,7 +7,10 @@ namespace CompanyContractsWebAPI.DbRepositories
     {
         public static void Initialize(ApplicationContext context)
         {
-            context.Database.EnsureCreated();
+            if (context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
+            }
 
             if (context.Companyes.Any() || context.Goods.Any())
                 return;
