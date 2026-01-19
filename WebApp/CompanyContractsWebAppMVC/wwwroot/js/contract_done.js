@@ -56,7 +56,6 @@ function Save() {
         newAmount = parseFloat(newAmountVal).toFixed(2);
     }
    
-
     var oldAmount = 0;
     var oldAmountVal = $('#oldAmount').val();
     if (oldAmountVal !== '') {

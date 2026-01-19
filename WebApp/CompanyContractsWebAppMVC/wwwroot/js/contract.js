@@ -159,6 +159,7 @@ $(document).ready(function () {
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
+            { field: 'integrationId', hidden: true },
             { field: 'number', title: 'Номер' },
             { field: 'good_Id', hidden: true },
             { field: 'good_Name', title: 'Наименование товара' },

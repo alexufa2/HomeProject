@@ -1,0 +1,5 @@
+rabbitmqctl add_user 'contracts_creator' 'contrat_cr_Pass_rabbit'
+rabbitmqctl set_permissions -p / 'contracts_creator' ".*" ".*" ".*"
+
+rabbitmqctl add_user 'contracts_cheker' 'contracts_ch_Pass_rabbit'
+rabbitmqctl set_permissions -p / 'contracts_cheker' ".*" ".*" ".*"

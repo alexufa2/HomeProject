@@ -22,9 +22,12 @@ namespace CompanyContractsWebAPI.Controllers
             try
             {
                 var dbItem = Helper.ConvertFromDto<Contract, CreateContractDto>(item);
+                
                 dbItem.Id = 0;
                 dbItem.Done_Sum = 0;
                 dbItem.Status = ContractStatuses.New;
+                dbItem.IntegrationId = Guid.NewGuid();
+                
                 var dbResult = _repository.Create(dbItem);
 
                 return Ok(item);

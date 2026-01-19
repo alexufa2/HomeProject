@@ -44,7 +44,8 @@ namespace CompanyContractsWebAPI.DbRepositories
                            Good_Count = comb.contract.Good_Count,
                            Done_Sum = comb.contract.Done_Sum,
                            Total_Sum = comb.contract.Total_Sum,
-                           Status = comb.contract.Status
+                           Status = comb.contract.Status,
+                           IntegrationId = comb.contract.IntegrationId
                        });
         }
 

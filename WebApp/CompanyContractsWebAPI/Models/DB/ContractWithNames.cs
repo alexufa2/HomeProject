@@ -19,5 +19,7 @@
         public decimal Done_Sum { get; set; }
 
         public string Status { get; set; }
+
+        public Guid IntegrationId { get; set; }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
-
-namespace CompanyContractsWebAPI
+﻿namespace CompanyContractsWebAPI
 {
     public static class Helper
     {
