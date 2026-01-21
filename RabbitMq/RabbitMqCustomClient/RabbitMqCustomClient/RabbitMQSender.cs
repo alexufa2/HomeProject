@@ -1,47 +1,41 @@
-﻿namespace RabbitMqCustomClient
-{
-    using RabbitMQ.Client;
-    using System.Text;
+﻿using RabbitMQ.Client;
+using System.Text;
+using System.Threading.Channels;
 
+namespace RabbitMqCustomClient
+{
     public class RabbitMQSender
     {
-        private string _hostName;
-        private int _port;
-        private string _userName;
-        private string _password;
+        private ConnectionFactory _factory;
 
-        public RabbitMQSender(string hostName, int port, string userName, string password)
+        public RabbitMQSender(string hostName, string virtualHost, int port, string userName, string password)
         {
-            _hostName = hostName;
-            _port = port;
-            _userName = userName;
-            _password = password;
+            _factory = new ConnectionFactory()
+            {
+                HostName = hostName,
+                VirtualHost = virtualHost,
+                Port = port,
+                UserName = userName,
+                Password = password
+            };
         }
 
-        public async Task SendMessage<T>(T message)
+        public async Task SendMessage<T>(T message, string exhange, string routeKey)
         {
-            // Создаем фабрику подключения
-            var factory = new ConnectionFactory()
-            {
-                HostName = _hostName, 
-                Port = _port,            
-                UserName = _userName,     
-                Password = _password      
-            };
-
             // Устанавливаем соединение
-            using (var connection = await factory.CreateConnectionAsync())
+            using (var connection = await _factory.CreateConnectionAsync())
             {
                 using (var channel = await connection.CreateChannelAsync())
                 {
-                    // Преобразуем сообщение в байты
+                    var properties = new BasicProperties { ContentType = "application/json" };
                     var body = ObjectToBytesConverter.ObjectToBytes(message);
 
                     // Публикуем сообщение
                     await channel.BasicPublishAsync(
-                        "",        // используем exchange по умолчанию
-                        "hello", // ключ маршрутизации (имя очереди)
+                        exhange,
+                        routeKey,
                         true,
+                        properties,
                         body
                     );
                 }
