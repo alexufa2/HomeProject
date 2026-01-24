@@ -3,7 +3,7 @@ using System.Text;
 
 namespace RabbitMqCustomClient
 {
-    internal class ObjectToBytesConverter
+    internal class ObjectConverter
     {
         public static byte[] ObjectToBytes<T>(T obj)
         {

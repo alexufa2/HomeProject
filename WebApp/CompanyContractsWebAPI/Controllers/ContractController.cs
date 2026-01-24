@@ -2,22 +2,30 @@
 using CompanyContractsWebAPI.Models;
 using CompanyContractsWebAPI.Models.DB;
 using CompanyContractsWebAPI.Models.DTO;
+using CompanyContractsWebAPI.Models.RabbitMq;
+using CompanyContractsWebAPI.Models.RabbitMq.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RabbitMqCustomClient;
 
 namespace CompanyContractsWebAPI.Controllers
 {
     public class ContractController : ControllerBase
     {
         protected IContractRepository _repository;
+        protected RabbitMqSender<ContractCreated> _rabbitMqSender;
+        protected SenderSettings _senderSettings;
 
-        public ContractController(IContractRepository repository)
+        public ContractController(IContractRepository repository, RabbitMqSender<ContractCreated> rabbitMqSender, IOptions<RabbitMQSettings> settings)
         {
             _repository = repository;
+            _rabbitMqSender = rabbitMqSender;
+            _senderSettings = settings.Value.ContarctCreateSender;
         }
 
         [HttpPost, Route("[controller]/Create")]
-        public virtual IActionResult Create([FromBody]CreateContractDto item)
+        public virtual async Task<IActionResult> Create([FromBody]CreateContractDto item)
         {
             try
             {
@@ -27,8 +35,13 @@ namespace CompanyContractsWebAPI.Controllers
                 dbItem.Done_Sum = 0;
                 dbItem.Status = ContractStatuses.New;
                 dbItem.IntegrationId = Guid.NewGuid();
-                
                 var dbResult = _repository.Create(dbItem);
+
+                var itemForConvert = _repository.GetById(dbResult.Id);
+                var integrationMsg = Helper.ConvertToDto<ContractWithNames, ContractCreated>(itemForConvert);
+                integrationMsg.StatusName = ContractStatuses.GetStatusName(itemForConvert.Status);
+
+                 await _rabbitMqSender.SendMessage(integrationMsg, _senderSettings.ExhangeName, _senderSettings.RoutingKey);
 
                 return Ok(item);
             }

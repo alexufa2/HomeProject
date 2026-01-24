@@ -1,6 +1,10 @@
 using CompanyContractsWebAPI.DbRepositories;
 using CompanyContractsWebAPI.Models.DB;
+using CompanyContractsWebAPI.Models.RabbitMq;
+using CompanyContractsWebAPI.Models.RabbitMq.Messages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using RabbitMqCustomClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +33,21 @@ builder.Services.AddScoped<IRepository<Good>, GoodRepository>();
 builder.Services.AddScoped<ICompanyGoodPriceRepository, CompanyGoodPriceRepository>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractDoneRepository, ContractDoneRepository>();
+
+
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQSettings"));
+builder.Services.AddSingleton<RabbitMQSettings>();
+
+builder.Services.AddSingleton(x =>
+{
+    var settings = x.GetRequiredService<IOptions<RabbitMQSettings>>();
+    var rabbitMQSettings = settings.Value;
+    return new RabbitMqSender<ContractCreated>(rabbitMQSettings.Host,
+                                  rabbitMQSettings.VirtualHost,
+                                  rabbitMQSettings.Port,
+                                  rabbitMQSettings.ContarctCreateSender.User.Name,
+                                  rabbitMQSettings.ContarctCreateSender.User.Pass);
+});
 
 var app = builder.Build();
 

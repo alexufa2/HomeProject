@@ -1,34 +1,22 @@
 ﻿using RabbitMQ.Client;
-using System.Text;
-using System.Threading.Channels;
 
 namespace RabbitMqCustomClient
 {
-    public class RabbitMQSender
+    public class RabbitMqSender<T>: BaseRabittMqFactoryWorker
     {
-        private ConnectionFactory _factory;
-
-        public RabbitMQSender(string hostName, string virtualHost, int port, string userName, string password)
-        {
-            _factory = new ConnectionFactory()
-            {
-                HostName = hostName,
-                VirtualHost = virtualHost,
-                Port = port,
-                UserName = userName,
-                Password = password
-            };
-        }
+        public RabbitMqSender(string hostName, string virtualHost, int port, string userName, string password) :
+            base(hostName, virtualHost, port, userName,password)
+        { }
 
         public async Task SendMessage<T>(T message, string exhange, string routeKey)
         {
             // Устанавливаем соединение
-            using (var connection = await _factory.CreateConnectionAsync())
+            using (var connection = await Factory.CreateConnectionAsync())
             {
                 using (var channel = await connection.CreateChannelAsync())
                 {
                     var properties = new BasicProperties { ContentType = "application/json" };
-                    var body = ObjectToBytesConverter.ObjectToBytes(message);
+                    var body = ObjectConverter.ObjectToBytes(message);
 
                     // Публикуем сообщение
                     await channel.BasicPublishAsync(
