@@ -1,27 +1,23 @@
-﻿using CompanyContractsWebAPI.DbRepositories;
+﻿using CompanyContractsWebAPI.BusinessLogic;
+using CompanyContractsWebAPI.DbRepositories;
+using CompanyContractsWebAPI.Helpers;
 using CompanyContractsWebAPI.Models;
 using CompanyContractsWebAPI.Models.DB;
 using CompanyContractsWebAPI.Models.DTO;
-using CompanyContractsWebAPI.Models.RabbitMq;
 using CompanyContractsWebAPI.Models.RabbitMq.Messages;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RabbitMqCustomClient;
 
 namespace CompanyContractsWebAPI.Controllers
 {
     public class ContractController : ControllerBase
     {
         protected IContractRepository _repository;
-        protected RabbitMqSender<ContractCreated> _rabbitMqSender;
-        protected SenderSettings _senderSettings;
+        protected RabbitMqWorker _rabbitMqWorker;
 
-        public ContractController(IContractRepository repository, RabbitMqSender<ContractCreated> rabbitMqSender, IOptions<RabbitMQSettings> settings)
+        public ContractController(IContractRepository repository, RabbitMqWorker rabbitMqWorker)
         {
             _repository = repository;
-            _rabbitMqSender = rabbitMqSender;
-            _senderSettings = settings.Value.ContarctCreateSender;
+            _rabbitMqWorker = rabbitMqWorker;
         }
 
         [HttpPost, Route("[controller]/Create")]
@@ -29,19 +25,14 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<Contract, CreateContractDto>(item);
-                
+                var dbItem = Helper.Convert<Contract, CreateContractDto>(item);
                 dbItem.Id = 0;
                 dbItem.Done_Sum = 0;
                 dbItem.Status = ContractStatuses.New;
                 dbItem.IntegrationId = Guid.NewGuid();
+                
                 var dbResult = _repository.Create(dbItem);
-
-                var itemForConvert = _repository.GetById(dbResult.Id);
-                var integrationMsg = Helper.ConvertToDto<ContractWithNames, ContractCreated>(itemForConvert);
-                integrationMsg.StatusName = ContractStatuses.GetStatusName(itemForConvert.Status);
-
-                 await _rabbitMqSender.SendMessage(integrationMsg, _senderSettings.ExhangeName, _senderSettings.RoutingKey);
+                await _rabbitMqWorker.SendContractCreated(dbResult);
 
                 return Ok(item);
             }
@@ -115,7 +106,7 @@ namespace CompanyContractsWebAPI.Controllers
 
         private ContractDto ConvertToDto(ContractWithNames item)
         {
-            var dto = Helper.ConvertToDto<ContractWithNames, ContractDto>(item);
+            var dto = Helper.Convert<ContractDto, ContractWithNames>(item);
             dto.StatusName = ContractStatuses.GetStatusName(dto.Status);
             return dto;
         }

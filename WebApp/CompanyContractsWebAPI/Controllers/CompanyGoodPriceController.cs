@@ -1,4 +1,5 @@
 ﻿using CompanyContractsWebAPI.DbRepositories;
+using CompanyContractsWebAPI.Helpers;
 using CompanyContractsWebAPI.Models.DB;
 using CompanyContractsWebAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
+                var dbItem = Helper.Convert<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
                 var dbResult = _repository.Create(dbItem);
                 return Ok(item);
             }
@@ -96,7 +97,7 @@ namespace CompanyContractsWebAPI.Controllers
         {
             try
             {
-                var dbItem = Helper.ConvertFromDto<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
+                var dbItem = Helper.Convert<CompanyGoodPrice, CreateCompanyGoodPriceDto>(item);
                 var dbResult = _repository.Update(dbItem);
 
                 if (dbResult == null)

@@ -1,17 +1,10 @@
-﻿namespace CompanyContractsWebAPI
+﻿namespace CompanyContractsWebAPI.Helpers
 {
     public static class Helper
     {
-        public static Tdb ConvertFromDto<Tdb, Udto>(Udto item)
+        public static Tdb Convert<Tdb, Udto>(Udto item)
         {
             Tdb result = (Tdb)Activator.CreateInstance(typeof(Tdb));
-            CopyFields(item, result);
-            return result;
-        }
-
-        public static Udto ConvertToDto<Tdb, Udto>(Tdb item)
-        {
-            Udto result = (Udto)Activator.CreateInstance(typeof(Udto));
             CopyFields(item, result);
             return result;
         }

@@ -1,4 +1,5 @@
 ﻿using CompanyContractsWebAPI.DbRepositories;
+using CompanyContractsWebAPI.Helpers;
 using CompanyContractsWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -102,12 +103,12 @@ namespace CompanyContractsWebAPI.Controllers
 
         protected virtual Tdb ConvertFromDto(Udto item)
         {
-            return Helper.ConvertFromDto<Tdb, Udto>(item);
+            return Helper.Convert<Tdb, Udto>(item);
         }
 
         protected virtual Udto ConvertToDto(Tdb item)
         {
-            return Helper.ConvertToDto<Tdb, Udto>(item);
+            return Helper.Convert<Udto, Tdb>(item);
         }
     }
 }

@@ -1,3 +1,4 @@
+using CompanyContractsWebAPI.BusinessLogic;
 using CompanyContractsWebAPI.DbRepositories;
 using CompanyContractsWebAPI.Models.DB;
 using CompanyContractsWebAPI.Models.RabbitMq;
@@ -37,17 +38,7 @@ builder.Services.AddScoped<IContractDoneRepository, ContractDoneRepository>();
 
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQSettings"));
 builder.Services.AddSingleton<RabbitMQSettings>();
-
-builder.Services.AddSingleton(x =>
-{
-    var settings = x.GetRequiredService<IOptions<RabbitMQSettings>>();
-    var rabbitMQSettings = settings.Value;
-    return new RabbitMqSender<ContractCreated>(rabbitMQSettings.Host,
-                                  rabbitMQSettings.VirtualHost,
-                                  rabbitMQSettings.Port,
-                                  rabbitMQSettings.ContarctCreateSender.User.Name,
-                                  rabbitMQSettings.ContarctCreateSender.User.Pass);
-});
+builder.Services.AddScoped<RabbitMqWorker>();
 
 var app = builder.Build();
 
