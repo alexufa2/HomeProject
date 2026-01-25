@@ -1,0 +1,6 @@
+@CompanyContractsWebAPI_HostAddress = http://localhost:6188
+
+GET {{CompanyContractsWebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
