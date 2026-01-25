@@ -17,6 +17,10 @@ call rabbitmqadmin --vhost "/" queues declare --name "contract.created.queue" --
 call rabbitmqadmin --vhost "/" queues declare --name "contract.updated.queue" --type "classic" --durable true --auto-delete false
 call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.created.queue" --routing-key="contract.created"
 call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.updated.queue" --routing-key="contract.updated"
+call rabbitmqadmin --vhost "/" queues declare --name "contract.done.created.queue" --type "classic" --durable true --auto-delete false
+call rabbitmqadmin --vhost "/" queues declare --name "contract.done.updated.queue" --type "classic" --durable true --auto-delete false
+call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.done.created.queue" --routing-key="contract.done.created"
+call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.done.updated.queue" --routing-key="contract.done.updated"
 
 call rabbitmqadmin --vhost "/" exchanges declare --name "to.creator" --type "direct" --durable true
 call rabbitmqadmin --vhost "/" queues declare --name "contract.checked.queue" --type "classic" --durable true --auto-delete false

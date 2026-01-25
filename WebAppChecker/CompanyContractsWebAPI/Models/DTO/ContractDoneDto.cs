@@ -8,6 +8,8 @@
 
         public decimal Done_Amount { get; set; }
 
+        public string StatusName { get; set; }
+
         public Guid IntegrationId { get; set; }
 
     }

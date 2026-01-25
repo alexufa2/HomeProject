@@ -1,8 +1,4 @@
-﻿using CompanyContractsWebAPI.DbRepositories;
-using CompanyContractsWebAPI.Helpers;
-using CompanyContractsWebAPI.Models;
-using CompanyContractsWebAPI.Models.DB;
-using CompanyContractsWebAPI.Models.RabbitMq;
+﻿using CompanyContractsWebAPI.Models.RabbitMq;
 using CompanyContractsWebAPI.Models.RabbitMq.Messages;
 using Microsoft.Extensions.Options;
 using RabbitMqCustomClient;
@@ -29,13 +25,27 @@ namespace CompanyContractsWebAPI.BusinessLogic
                     _rabbitMQSettings.Host,
                     _rabbitMQSettings.VirtualHost,
                     _rabbitMQSettings.Port,
-                    _rabbitMQSettings.ContarctCreatedQueue.User.Name,
-                    _rabbitMQSettings.ContarctCreatedQueue.User.Pass
+                    _rabbitMQSettings.ContarctConsumer.User.Name,
+                    _rabbitMQSettings.ContarctConsumer.User.Pass
                     );
 
             createContractConsumer.StartConsumerAsync(
-                _rabbitMQSettings.ContarctCreatedQueue.Name,
+                _rabbitMQSettings.ContarctConsumer.CreatedQueue,
                 _messageProcessor.ProcessContractCreated
+                );
+
+            var updateContractConsumer =
+               new RabbitMqConsumer<ContractUpdated>(
+                   _rabbitMQSettings.Host,
+                   _rabbitMQSettings.VirtualHost,
+                   _rabbitMQSettings.Port,
+                   _rabbitMQSettings.ContarctConsumer.User.Name,
+                   _rabbitMQSettings.ContarctConsumer.User.Pass
+                   );
+
+            updateContractConsumer.StartConsumerAsync(
+                _rabbitMQSettings.ContarctConsumer.UpdatedQueue,
+                _messageProcessor.ProcessContractUpdated
                 );
 
             return Task.CompletedTask;

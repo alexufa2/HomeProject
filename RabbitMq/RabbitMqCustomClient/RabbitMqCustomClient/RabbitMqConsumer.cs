@@ -5,12 +5,9 @@ namespace RabbitMqCustomClient
 {
     public class RabbitMqConsumer<T>: BaseRabittMqFactoryWorker
     {
-
-
         public RabbitMqConsumer(string hostName, string virtualHost, int port, string userName, string password) :
            base(hostName, virtualHost, port, userName, password)
         { }
-
 
         public async Task StartConsumerAsync(string queue, Action<T> action)
         {

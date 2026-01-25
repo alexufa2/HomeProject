@@ -7,5 +7,7 @@
         public int Contract_Id { get; set; }
 
         public decimal Done_Amount { get; set; }
+
+        public Guid IntegrationId { get; set; }
     }
 }

@@ -38,7 +38,8 @@ builder.Services.AddScoped<IContractDoneRepository, ContractDoneRepository>();
 
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQSettings"));
 builder.Services.AddSingleton<RabbitMQSettings>();
-builder.Services.AddScoped<RabbitMqWorker>();
+builder.Services.AddSingleton<IRepositoryFactory, RepositoryFactory>();
+builder.Services.AddSingleton<RabbitMqWorker>();
 
 var app = builder.Build();
 

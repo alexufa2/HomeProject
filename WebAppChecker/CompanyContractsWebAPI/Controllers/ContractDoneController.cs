@@ -3,7 +3,6 @@ using CompanyContractsWebAPI.Helpers;
 using CompanyContractsWebAPI.Models.DB;
 using CompanyContractsWebAPI.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 
 namespace CompanyContractsWebAPI.Controllers
 {

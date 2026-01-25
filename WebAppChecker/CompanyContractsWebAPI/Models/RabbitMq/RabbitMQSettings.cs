@@ -5,14 +5,18 @@
         public string Host { get; set; }
         public string VirtualHost { get; set; }
         public int Port { get; set; }
-        public QueueSettings ContarctCreatedQueue { get; set; }
+        public ConsumerSettings ContarctConsumer { get; set; }
+        public ConsumerSettings ContarctDoneConsumer { get; set; }
 
     }
 
-    public class QueueSettings
+    public class ConsumerSettings
     {
-        public string Name { get; set; }
         public User User { get; set; }
+
+        public string CreatedQueue { get; set; }
+
+        public string UpdatedQueue { get; set; }
     }
 
     public class User

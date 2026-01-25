@@ -140,8 +140,7 @@ $(document).ready(function () {
             { field: 'id', title: 'ID', width: 45 },
             { field: 'contract_Id', title: 'Contract_Id', hidden: true },
             { field: 'done_Amount', title: 'Сумма исполнения', width: 450 },
-            { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
-            { title: '', field: 'Delete', width: 34, type: 'icon', icon: 'glyphicon-remove', tooltip: 'Удалить', events: { 'click': Delete } }
+            { field: 'statusName', title: 'Статус' },
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });

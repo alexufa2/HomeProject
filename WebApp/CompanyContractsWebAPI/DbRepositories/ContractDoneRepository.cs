@@ -30,6 +30,10 @@ namespace CompanyContractsWebAPI.DbRepositories
                     amount.Value = item.Done_Amount;
                     cmd.Parameters.Add(amount);
 
+                    var integrId = new NpgsqlParameter("integrid", NpgsqlTypes.NpgsqlDbType.Uuid);
+                    integrId.Value = item.IntegrationId;
+                    cmd.Parameters.Add(integrId);
+
                     var idParam = new NpgsqlParameter("new_id", NpgsqlTypes.NpgsqlDbType.Integer);
                     idParam.Direction = System.Data.ParameterDirection.Output;
                     cmd.Parameters.Add(idParam);

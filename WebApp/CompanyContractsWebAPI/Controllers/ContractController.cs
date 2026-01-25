@@ -73,13 +73,18 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpPut, Route("[controller]/Cancel")]
-        public virtual IActionResult Cancel(int id)
+        public virtual async Task<IActionResult> Cancel(int id)
         {
             try
             {
                 var item  = _repository.UpdateStatus(id, ContractStatuses.Canceled);
                 if (item == null)
                     return NotFound();
+
+                await _rabbitMqWorker.SendContractUpdated(
+                    item.IntegrationId,
+                    ContractStatuses.GetStatusName(ContractStatuses.Canceled),
+                    item.Done_Sum);
 
                 return Ok();
             }
@@ -90,10 +95,19 @@ namespace CompanyContractsWebAPI.Controllers
         }
 
         [HttpDelete, Route("[controller]/Delete")]
-        public virtual IActionResult Delete(int id)
+        public virtual async Task<IActionResult> Delete(int id)
         {
             try
             {
+                var item = _repository.GetById(id);
+                if (item != null)
+                {
+                    await _rabbitMqWorker.SendContractUpdated(
+                       item.IntegrationId,
+                       "Удален",
+                       item.Done_Sum);
+                }
+
                 var result = _repository.Delete(id);
                 return Ok();
             }

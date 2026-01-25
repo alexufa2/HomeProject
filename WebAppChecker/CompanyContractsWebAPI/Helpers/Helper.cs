@@ -46,5 +46,12 @@ namespace CompanyContractsWebAPI.Helpers
             contract.Done_Sum = 0;
             return contract;
         }
+
+        public static ContractDone ConvertToContractDone(ContractDoneCreated item)
+        {
+            var contractDone = Convert<ContractDone, ContractDoneCreated>(item);
+            contractDone.Id = 0;
+            return contractDone;
+        }
     }
 }

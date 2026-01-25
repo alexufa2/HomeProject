@@ -43,7 +43,9 @@ function LoadContractData(contractId) {
 
 function Edit(e) {
     isEdit = true;
+    IntegrationId
     $('#ID').val(e.data.id);
+    $('#IntegrationId').val(e.data.record.integrationId);
     $('#amount').val(e.data.record.done_Amount);
     $('#oldAmount').val(e.data.record.done_Amount);
     dialog.open('Редактировать исполнение');
@@ -72,6 +74,7 @@ function Save() {
 
     var record = {
         Id: 0,
+        IntegrationId: '00000000-0000-0000-0000-000000000000',
         Contract_Id: contract.id,
         Done_Amount: $('#amount').val()
     };
@@ -82,6 +85,7 @@ function Save() {
         sendUrl = 'http://localhost:5188/ContractDone/Update';
         sendMethod = 'PUT';
         record.Id = parseInt($('#ID').val());
+        record.IntegrationId = $('#IntegrationId').val();
     }
 
     $.ajax(
@@ -138,6 +142,7 @@ $(document).ready(function () {
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
+            { field: 'integrationId', hidden: true },
             { field: 'contract_Id', title: 'Contract_Id', hidden: true },
             { field: 'done_Amount', title: 'Сумма исполнения', width: 450 },
             { title: '', field: 'Edit', width: 34, type: 'icon', icon: 'glyphicon-pencil', tooltip: 'Редактировать', events: { 'click': Edit } },
@@ -157,6 +162,7 @@ $(document).ready(function () {
     $('#btnAdd').on('click', function () {
         isEdit = false;
         $('#ID').val('');
+        $('#IntegrationId').val('00000000-0000-0000-0000-000000000000');
         $('#amount').val('');
         $('#oldAmount').val('');
         dialog.open('Добавить сумму исполнения');
@@ -169,7 +175,7 @@ $(document).ready(function () {
             var isNotEmpty = (value !== "");
             return isNotEmpty && isValidMoney;
         },
-        "Введиту размер суммы исполнения через '.'"
+        "Введите размер суммы исполнения через '.'"
     );
 
     $('#contractDoneForm').validate({

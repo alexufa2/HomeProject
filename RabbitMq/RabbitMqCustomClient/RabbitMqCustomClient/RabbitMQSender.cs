@@ -2,13 +2,13 @@
 
 namespace RabbitMqCustomClient
 {
-    public class RabbitMqSender<T>: BaseRabittMqFactoryWorker
+    public class RabbitMqSender: BaseRabittMqFactoryWorker
     {
         public RabbitMqSender(string hostName, string virtualHost, int port, string userName, string password) :
             base(hostName, virtualHost, port, userName,password)
         { }
 
-        public async Task SendMessage(T message, string exhange, string routeKey)
+        public async Task SendMessage<T>(T message, string exhange, string routeKey)
         {
             // Устанавливаем соединение
             using (var connection = await Factory.CreateConnectionAsync())

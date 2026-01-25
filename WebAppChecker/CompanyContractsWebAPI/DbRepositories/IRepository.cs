@@ -7,7 +7,9 @@ namespace CompanyContractsWebAPI.DbRepositories
         T Create(T item);
         
         T GetById(int id);
-        
+
+        T GetByIntegrationId(Guid integrationId);
+
         IEnumerable<T> GetAll();
 
         T Update(T item);

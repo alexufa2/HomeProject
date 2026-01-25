@@ -18,5 +18,7 @@ namespace CompanyContractsWebAPI.Models.DB
 
         [Column(TypeName = "money")]
         public decimal Done_Amount { get; set; }
+
+        public Guid IntegrationId { get; set; }
     }
 }

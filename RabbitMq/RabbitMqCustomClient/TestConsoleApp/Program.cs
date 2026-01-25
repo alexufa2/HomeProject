@@ -6,7 +6,7 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            var sender = new RabbitMqSender<Message>("localhost", "/", 5672, "contracts_creator", "contrat_cr_Pass_rabbit");
+            var sender = new RabbitMqSender("localhost", "/", 5672, "contracts_creator", "contrat_cr_Pass_rabbit");
 
             var consumer = new RabbitMqConsumer<Message>("localhost", "/", 5672, "contracts_creator", "contrat_cr_Pass_rabbit");
             var consumerTask = consumer.StartConsumerAsync("contract.created.queue",

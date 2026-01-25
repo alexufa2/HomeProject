@@ -27,6 +27,11 @@ namespace CompanyContractsWebAPI.DbRepositories
             return _applicationContext.Set<T>().FirstOrDefault(f => f.Id == id);
         }
 
+        public T GetByIntegrationId(Guid integrationId)
+        {
+            return _applicationContext.Set<T>().FirstOrDefault(f => f.IntegrationId == integrationId);
+        }
+
         public virtual IEnumerable<T> GetAll()
         {
             return _applicationContext.Set<T>();
@@ -72,5 +77,7 @@ namespace CompanyContractsWebAPI.DbRepositories
                 prop.SetValue(destItem, prop.GetValue(sourceItem, null), null);
             }
         }
+
+       
     }
 }
