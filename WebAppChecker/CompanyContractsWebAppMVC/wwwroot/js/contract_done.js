@@ -1,14 +1,5 @@
 var grid, dialog, isEdit, contract;
 
-function HideCols() {
-    if (grid && contract) {
-        if (contract.status === 'Canceled' || contract.status === 'Finished') {
-            grid.hideColumn('Edit');
-            grid.hideColumn('Delete');
-        }
-    }
-}
-
 function LoadContractData(contractId) {
     var sendUrl = 'http://localhost:6188/Contract/GetById?id=' + contractId;
     $.ajax(
@@ -28,101 +19,12 @@ function LoadContractData(contractId) {
             $('#h3').text(headerText);
 
             var contractInfoText = 'Сумма исполнений: ' + contract.done_Sum + '; Статус контракта: ' + contract.statusName;
-            $('#lblContract').text(contractInfoText);
-
-            if (contract.status === 'Canceled' || contract.status === 'Finished') {
-                $('#btnAdd').prop('disabled', 'disabled');
-            }
-
-            HideCols();
+            $('#lblContract').text(contractInfoText);        
         })
         .fail(function () {
             alert('Невозможно загрузить данные по контракту');
         });
 }
-
-function Edit(e) {
-    isEdit = true;
-    $('#ID').val(e.data.id);
-    $('#amount').val(e.data.record.done_Amount);
-    $('#oldAmount').val(e.data.record.done_Amount);
-    dialog.open('Редактировать исполнение');
-}
-
-function Save() {
-    var newAmount = 0;
-    var newAmountVal = $('#amount').val();
-    if (newAmountVal !== '') {
-        newAmount = parseFloat(newAmountVal).toFixed(2);
-    }
-   
-    var oldAmount = 0;
-    var oldAmountVal = $('#oldAmount').val();
-    if (oldAmountVal !== '') {
-        oldAmount = parseFloat(oldAmountVal).toFixed(2);
-    }
-
-    var contractRemind = contract.total_Sum - contract.done_Sum;
-    var amountDelta = newAmount - oldAmount
-
-    if (contractRemind < amountDelta) {
-        alert('Введена слишком большая сумма. Остаток по контракту: ' + contractRemind);
-        return;
-    }
-
-    var record = {
-        Id: 0,
-        Contract_Id: contract.id,
-        Done_Amount: $('#amount').val()
-    };
-    var sendUrl = 'http://localhost:6188/ContractDone/Create';
-    var sendMethod = 'POST';
-
-    if (isEdit) {
-        sendUrl = 'http://localhost:6188/ContractDone/Update';
-        sendMethod = 'PUT';
-        record.Id = parseInt($('#ID').val());
-    }
-
-    $.ajax(
-        {
-            contentType: 'application/json',
-            url: sendUrl,
-            data: JSON.stringify(record),
-            method: sendMethod
-        })
-        .done(function () {
-            dialog.close();
-            grid.reload();
-            LoadContractData(contract.id);
-        })
-        .fail(function () {
-            alert('Ошибка при сохранении.');
-            dialog.close();
-        });
-}
-
-function Delete(e) {
-    if (confirm('Вы уверены?')) {
-        var sendUrl = 'http://localhost:6188/ContractDone/Delete?Id=' + e.data.id;
-
-        $.ajax(
-            {
-                contentType: 'application/json',
-                url: sendUrl,
-                method: 'DELETE'
-            }
-        )
-            .done(function () {
-                grid.reload();
-                LoadContractData(contract.id);
-            })
-            .fail(function () {
-                alert('Не удалось удалить запись.');
-            });
-    }
-}
-
 
 $(document).ready(function () {
     // данные по Id компании
@@ -138,9 +40,10 @@ $(document).ready(function () {
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
+            { field: 'integrationId', hidden: true },
             { field: 'contract_Id', title: 'Contract_Id', hidden: true },
-            { field: 'done_Amount', title: 'Сумма исполнения', width: 450 },
-            { field: 'statusName', title: 'Статус' },
+            { field: 'done_Amount', title: 'Сумма исполнения', width: 250 },
+            { field: 'statusName', title: 'Статус', width: 100 }
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
@@ -156,6 +59,7 @@ $(document).ready(function () {
     $('#btnAdd').on('click', function () {
         isEdit = false;
         $('#ID').val('');
+        $('#IntegrationId').val('00000000-0000-0000-0000-000000000000');
         $('#amount').val('');
         $('#oldAmount').val('');
         dialog.open('Добавить сумму исполнения');
@@ -168,7 +72,7 @@ $(document).ready(function () {
             var isNotEmpty = (value !== "");
             return isNotEmpty && isValidMoney;
         },
-        "Введиту размер суммы исполнения через '.'"
+        "Введите размер суммы исполнения через '.'"
     );
 
     $('#contractDoneForm').validate({

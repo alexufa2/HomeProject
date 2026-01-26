@@ -22,8 +22,5 @@ call rabbitmqadmin --vhost "/" queues declare --name "contract.done.updated.queu
 call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.done.created.queue" --routing-key="contract.done.created"
 call rabbitmqadmin --vhost="/" bindings declare --source="to.checker" --destination-type="queue" --destination="contract.done.updated.queue" --routing-key="contract.done.updated"
 
-call rabbitmqadmin --vhost "/" exchanges declare --name "to.creator" --type "direct" --durable true
-call rabbitmqadmin --vhost "/" queues declare --name "contract.checked.queue" --type "classic" --durable true --auto-delete false
-call rabbitmqadmin --vhost="/" bindings declare --source="to.creator" --destination-type="queue" --destination="contract.checked.queue" --routing-key="contract.checked"
 
 pause

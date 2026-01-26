@@ -73,7 +73,7 @@ namespace CompanyContractsWebAPI.Controllers
                    dbResult.IntegrationId,
                    dbResult.Contract_Id,
                    dbResult.Done_Amount,
-                   "Выполнено");
+                   "Добавлено (изменено)");
 
                 return Ok(item);
             }

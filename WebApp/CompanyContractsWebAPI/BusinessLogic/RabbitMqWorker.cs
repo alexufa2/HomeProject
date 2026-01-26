@@ -69,18 +69,22 @@ namespace CompanyContractsWebAPI.BusinessLogic
             var integrationMsg = Helper.Convert<ContractDoneCreated, ContractDone>(itemForConvert);
             integrationMsg.StatusName = "Добавлено";
 
-            await _rabbitMqSender.SendMessage(
-                 integrationMsg,
-                 _rabbitMQSettings.ToCheckerExhange,
-                 _rabbitMQSettings.ContarctDoneSender.CreateRoutingKey);
-
             var contractItem = _contractRepository.GetById(createdContractDone.Contract_Id);
 
             if (contractItem != null)
+            {
+                integrationMsg.Contract_IntegrationId = contractItem.IntegrationId;
+
+                await _rabbitMqSender.SendMessage(
+                    integrationMsg,
+                    _rabbitMQSettings.ToCheckerExhange,
+                    _rabbitMQSettings.ContarctDoneSender.CreateRoutingKey);
+
                 await SendContractUpdated(
                     contractItem.IntegrationId,
                     ContractStatuses.GetStatusName(contractItem.Status),
                     contractItem.Done_Sum);
+            }
         }
 
         public async Task SendContractDoneUpdated(Guid integrationId, int contractId, decimal doneAmount, string status)

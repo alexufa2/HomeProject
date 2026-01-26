@@ -10,11 +10,7 @@
                 <label id="lblContract"></label>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-4">
-                <button id="btnAdd" type="button" class="btn btn-default">Добавить</button>
-            </div>
-        </div>
+      
         <div class="row" style="margin-top: 10px">
             <div class="col-xs-5">
                 <table id="grid"></table>
@@ -22,18 +18,6 @@
         </div>
     </div>
 
-    <div id="dialog" style="display: none">
-        <input type="hidden" id="ID" />
-        <form id="contractDoneForm">
-            <div class="form-group">
-                <label for="amount">Величина исполнения</label>
-                <input type="text" class="form-control" id="amount" name="amountField" />
-                <input type="hidden" id="oldAmount" />
-            </div>
-            <button type="button" id="btnSave" class="btn btn-default">Сохранить</button>
-            <button type="button" id="btnCancel" class="btn btn-default">Отменить</button>
-        </form>
-    </div>
-
+    
     <script src="~/js/contract_done.js" asp-append-version="true"></script>
 </body>

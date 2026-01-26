@@ -2,7 +2,7 @@
 {
     public class ContractDoneCreated: IIntegrationEntity
     {
-        public int Contract_Id { get; set; }
+        public Guid Contract_IntegrationId { get; set; }
 
         public decimal Done_Amount { get; set; }
 

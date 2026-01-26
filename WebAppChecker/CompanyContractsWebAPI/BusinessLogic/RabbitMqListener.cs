@@ -48,6 +48,36 @@ namespace CompanyContractsWebAPI.BusinessLogic
                 _messageProcessor.ProcessContractUpdated
                 );
 
+            var createContractDoneConsumer =
+               new RabbitMqConsumer<ContractDoneCreated>(
+                   _rabbitMQSettings.Host,
+                   _rabbitMQSettings.VirtualHost,
+                   _rabbitMQSettings.Port,
+                   _rabbitMQSettings.ContarctDoneConsumer.User.Name,
+                   _rabbitMQSettings.ContarctDoneConsumer.User.Pass
+                   );
+
+            createContractDoneConsumer.StartConsumerAsync(
+                _rabbitMQSettings.ContarctDoneConsumer.CreatedQueue,
+                _messageProcessor.ProcessContractDoneCreated
+                );
+
+            var updateContractDoneConsumer =
+               new RabbitMqConsumer<ContractDoneUpdated>(
+                   _rabbitMQSettings.Host,
+                   _rabbitMQSettings.VirtualHost,
+                   _rabbitMQSettings.Port,
+                   _rabbitMQSettings.ContarctDoneConsumer.User.Name,
+                   _rabbitMQSettings.ContarctDoneConsumer.User.Pass
+                   );
+
+            updateContractDoneConsumer.StartConsumerAsync(
+                _rabbitMQSettings.ContarctDoneConsumer.UpdatedQueue,
+                _messageProcessor.ProcessContractDoneUpdated
+                );
+
+
+
             return Task.CompletedTask;
         }
        

@@ -38,13 +38,20 @@ namespace CompanyContractsWebAPI.BusinessLogic
         public void ProcessContractDoneCreated(ContractDoneCreated message)
         {
             var contractDone = Helper.ConvertToContractDone(message);
-            var repository = _repositoryFactory.CreateRepository<IRepository<ContractDone>>();
-            repository.Create(contractDone);
+            var contractRepository = _repositoryFactory.CreateRepository<IRepository<Contract>>();
+            var contract = contractRepository.GetByIntegrationId(message.Contract_IntegrationId);
+
+            if (contract != null)
+            {
+                contractDone.Contract_Id = contract.Id; 
+                var repository = _repositoryFactory.CreateRepository<IContractDoneRepository>();
+                repository.Create(contractDone);
+            }
         }
 
         public void ProcessContractDoneUpdated(ContractDoneUpdated message)
         {
-            var repository = _repositoryFactory.CreateRepository<IRepository<ContractDone>>();
+            var repository = _repositoryFactory.CreateRepository<IContractDoneRepository>();
             var contractDone = repository.GetByIntegrationId(message.IntegrationId);
 
             if (contractDone != null)
