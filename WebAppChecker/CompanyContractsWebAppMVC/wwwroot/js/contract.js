@@ -1,5 +1,4 @@
-var grid, dialog;
-
+var grid, hubConnection;
 
 $(document).ready(function () {
 
@@ -17,11 +16,36 @@ $(document).ready(function () {
             { field: 'total_Sum', title: 'Сумма' },
             { field: 'done_Sum', title: 'Сумма исполнения' },
             { field: 'statusName', title: 'Статус' },
-            { title: '', field: '', width: 34, 
+            {
+                title: '', field: '', width: 34,
                 tmpl: '<a style="color: inherit;" href="/Contract/DoneList?contractId={id}"><span class="glyphicon-calendar glyphicon" style="cursor: pointer;"></span></a>',
                 tooltip: 'Посмотреть исполнения'
             }
         ],
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
- });
+
+    hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl('http://localhost:6188/contractsHub')
+        .build();
+
+    $("#btnSend").on('click', function () {
+        hubConnection.invoke('SendReloadContracts', 'test_msg')
+            .catch(function (err) {
+                return console.error(err.toString());
+            });
+    });
+
+    hubConnection.on("ReloadContracts", function (message) {
+        grid.reload();
+        alert('Таблица перезагружена');
+    });
+
+    hubConnection.start()
+        .then(function () {
+            console.log('hubConnection.start call');
+        })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+});

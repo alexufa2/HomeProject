@@ -1,4 +1,4 @@
-var grid, dialog, isEdit, contract;
+var grid, contractId, contract;
 
 function LoadContractData(contractId) {
     var sendUrl = 'http://localhost:6188/Contract/GetById?id=' + contractId;
@@ -29,7 +29,7 @@ function LoadContractData(contractId) {
 $(document).ready(function () {
     // данные по Id компании
     var urlParams = new URLSearchParams(window.location.search);
-    var contractId = urlParams.get('contractId');
+    contractId = urlParams.get('contractId');
 
     $('#ContractId').val(contractId);
     LoadContractData(contractId);
@@ -48,61 +48,9 @@ $(document).ready(function () {
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
 
-    HideCols();
-
-    dialog = $('#dialog').dialog({
-        uiLibrary: 'bootstrap',
-        autoOpen: false,
-        resizable: false,
-        modal: true
-    });
-    $('#btnAdd').on('click', function () {
-        isEdit = false;
-        $('#ID').val('');
-        $('#IntegrationId').val('00000000-0000-0000-0000-000000000000');
-        $('#amount').val('');
-        $('#oldAmount').val('');
-        dialog.open('Добавить сумму исполнения');
-    });
-
-    jQuery.validator.addMethod(
-        "money",
-        function (value, element) {
-            var isValidMoney = /^\d{0,8}(\.\d{0,2})?$/.test(value);
-            var isNotEmpty = (value !== "");
-            return isNotEmpty && isValidMoney;
-        },
-        "Введите размер суммы исполнения через '.'"
-    );
-
-    $('#contractDoneForm').validate({
-        rules: {
-            amountField: { money: true }
-        },
-        messages: {
-            amountField: "Введиту размер суммы исполнения через '.'",
-        }
-    });
-
-
-    $('#btnSave').on('click', function () {
-        var validateRes = $('#contractDoneForm').valid();
-        if (!validateRes) { // Not Valid
-            return false;
-        }
-        else {
-            Save();
-        }
-    });
-
-    $('#btnCancel').on('click', function () {
-        dialog.close();
-
-        var $validationForm = $('#contractDoneForm');
-        var $errLabels = $validationForm.find("label.error");
-        $errLabels.remove();
-
-        var $errItems = $validationForm.find(".error");
-        $errItems.removeClass("error");
-    });
+    var gridReload = grid.reload;
+    grid.reload = new function customReload() {
+        gridReload();
+        LoadContractData(contractId);
+    }
 });

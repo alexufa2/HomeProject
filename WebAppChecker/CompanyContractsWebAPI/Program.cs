@@ -11,16 +11,20 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: policyName, builder =>
     {
-        builder.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        builder.AllowAnyMethod()
+           .AllowAnyHeader()
+           .SetIsOriginAllowed(origin => true)
+           .AllowCredentials();
     });
 });
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
 
 string? connectionStr = builder.Configuration.GetConnectionString("DefaultConnectionString");
 
@@ -54,4 +58,5 @@ if (app.Environment.IsDevelopment())
 app.UseCors(policyName);
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ContractsHub>("/contractsHub");
 app.Run();
