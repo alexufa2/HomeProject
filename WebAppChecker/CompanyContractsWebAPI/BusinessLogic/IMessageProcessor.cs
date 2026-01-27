@@ -4,11 +4,11 @@ namespace CompanyContractsWebAPI.BusinessLogic
 {
     public interface IMessageProcessor
     {
-        void ProcessContractCreated(ContractCreated message);
-        void ProcessContractUpdated(ContractUpdated message);
+        Task ProcessContractCreated(ContractCreated message);
+        Task ProcessContractUpdated(ContractUpdated message);
 
-        void ProcessContractDoneCreated(ContractDoneCreated message);
-        void ProcessContractDoneUpdated(ContractDoneUpdated message);
+        Task ProcessContractDoneCreated(ContractDoneCreated message);
+        Task ProcessContractDoneUpdated(ContractDoneUpdated message);
 
     }
 }

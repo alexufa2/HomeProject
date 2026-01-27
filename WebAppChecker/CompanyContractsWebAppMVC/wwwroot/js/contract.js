@@ -29,16 +29,16 @@ $(document).ready(function () {
         .withUrl('http://localhost:6188/contractsHub')
         .build();
 
-    $("#btnSend").on('click', function () {
-        hubConnection.invoke('SendReloadContracts', 'test_msg')
-            .catch(function (err) {
-                return console.error(err.toString());
-            });
-    });
+    //$("#btnSend").on('click', function () {
+    //    hubConnection.invoke('SendReloadContracts', 'test_msg')
+    //        .catch(function (err) {
+    //            return console.error(err.toString());
+    //        });
+    //});
 
-    hubConnection.on("ReloadContracts", function (message) {
+    hubConnection.on('ReloadContracts', function (message) {
         grid.reload();
-        alert('Таблица перезагружена');
+        console.log('Таблица перезагружена');
     });
 
     hubConnection.start()

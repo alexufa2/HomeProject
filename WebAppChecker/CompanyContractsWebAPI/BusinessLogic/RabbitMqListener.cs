@@ -76,10 +76,7 @@ namespace CompanyContractsWebAPI.BusinessLogic
                 _messageProcessor.ProcessContractDoneUpdated
                 );
 
-
-
             return Task.CompletedTask;
         }
-       
     }
 }

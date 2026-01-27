@@ -37,6 +37,7 @@ builder.Services.AddTransient<IContractDoneRepository, ContractDoneRepository>()
 builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQSettings"));
 builder.Services.AddSingleton<RabbitMQSettings>();
 builder.Services.AddSingleton<IRepositoryFactory, RepositoryFactory>();
+builder.Services.AddSingleton<ContractsHub>();
 builder.Services.AddSingleton<IMessageProcessor, MessageProcessor>();
 
 builder.Services.AddHostedService<RabbitMqListener>();

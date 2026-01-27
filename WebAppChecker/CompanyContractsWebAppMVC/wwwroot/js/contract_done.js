@@ -1,4 +1,4 @@
-var grid, contractId, contract;
+var grid, contractId, contract, hubConnection;
 
 function LoadContractData(contractId) {
     var sendUrl = 'http://localhost:6188/Contract/GetById?id=' + contractId;
@@ -48,9 +48,31 @@ $(document).ready(function () {
         pager: { limit: 5, sizes: [2, 5, 10, 20] }
     });
 
-    var gridReload = grid.reload;
-    grid.reload = new function customReload() {
-        gridReload();
-        LoadContractData(contractId);
-    }
+    hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl('http://localhost:6188/contractsHub')
+        .build();
+
+    //$("#btnSend").on('click', function () {
+    //    hubConnection.invoke('SendReloadContracts', 'test_msg')
+    //        .catch(function (err) {
+    //            return console.error(err.toString());
+    //        });
+    //});
+
+    hubConnection.on('ReloadContractDoneForContract', function (recievedContractId) {
+        if (recievedContractId == contractId) {
+            LoadContractData(contractId);
+            grid.reload();
+            console.log('Данные перезагружена');
+        }
+    });
+
+    hubConnection.start()
+        .then(function () {
+            console.log('hubConnection.start call');
+        })
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+    
 });
