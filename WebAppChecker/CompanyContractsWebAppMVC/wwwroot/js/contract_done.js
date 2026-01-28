@@ -1,4 +1,4 @@
-var grid, contractId, contract, hubConnection;
+var grid, contractId, hubConnection;
 
 function LoadContractData(contractId) {
     var sendUrl = 'http://localhost:6188/Contract/GetById?id=' + contractId;
@@ -10,33 +10,34 @@ function LoadContractData(contractId) {
         }
     )
         .done(function (data) {
-            contract = data;
-
-            var newTitile = 'Исполенения по контракту номер: ' + contract.number;
-            $(document).prop('title', newTitile);
-
-            var headerText = newTitile + '. Сумма контракта: ' + contract.total_Sum;
-            $('#h3').text(headerText);
-
-            var contractInfoText = 'Сумма исполнений: ' + contract.done_Sum + '; Статус контракта: ' + contract.statusName;
-            $('#lblContract').text(contractInfoText);        
+            UpdateTitle(data);
+              
         })
         .fail(function () {
             alert('Невозможно загрузить данные по контракту');
         });
 }
 
+function UpdateTitle(contract) {
+    var newTitile = 'Исполенения по контракту номер: ' + contract.number;
+    $(document).prop('title', newTitile);
+
+    var headerText = newTitile + '. Сумма контракта: ' + contract.total_Sum;
+    $('#h3').text(headerText);
+
+    var contractInfoText = 'Сумма исполнений: ' + contract.done_Sum + '; Статус контракта: ' + contract.statusName;
+    $('#lblContract').text(contractInfoText);
+}
+
 $(document).ready(function () {
     // данные по Id компании
     var urlParams = new URLSearchParams(window.location.search);
-    contractId = urlParams.get('contractId');
-
+    contractId = parseInt(urlParams.get('contractId'));
     $('#ContractId').val(contractId);
-    LoadContractData(contractId);
 
     grid = $('#grid').grid({
         primaryKey: 'id',
-        dataSource: 'http://localhost:6188/ContractDone/GetByContractId?contractId=' + contractId,
+        //dataSource: 'http://localhost:6188/ContractDone/GetByContractId?contractId=' + contractId,
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
@@ -52,17 +53,20 @@ $(document).ready(function () {
         .withUrl('http://localhost:6188/contractsHub')
         .build();
 
-    //$("#btnSend").on('click', function () {
-    //    hubConnection.invoke('SendReloadContracts', 'test_msg')
-    //        .catch(function (err) {
-    //            return console.error(err.toString());
-    //        });
-    //});
+    hubConnection.on('RecieveContractById', function (contract) {
+        UpdateTitle(contract);
+    });
+
+    hubConnection.on('ReciveContractDoneByContractId', function (contractDoneDtoArr) {
+        hubConnection.invoke("GetContractById", contractId);
+        grid.render(contractDoneDtoArr);
+        console.log('Данные загружены');
+    });
 
     hubConnection.on('ReloadContractDoneForContract', function (recievedContractId) {
         if (recievedContractId == contractId) {
-            LoadContractData(contractId);
-            grid.reload();
+            hubConnection.invoke("GetContractById", contractId);
+            hubConnection.invoke("GetContractDoneByContractId", contractId);
             console.log('Данные перезагружена');
         }
     });
@@ -70,6 +74,8 @@ $(document).ready(function () {
     hubConnection.start()
         .then(function () {
             console.log('hubConnection.start call');
+            hubConnection.invoke("GetContractById", contractId);
+            hubConnection.invoke("GetContractDoneByContractId", contractId);
         })
         .catch(function (err) {
             return console.error(err.toString());

@@ -1,10 +1,12 @@
-var grid, hubConnection;
+var grid, hubConnection, contarctArr;
 
 $(document).ready(function () {
 
+    //contarctArr = new Array();
+
     grid = $('#grid').grid({
         primaryKey: 'id',
-        dataSource: 'http://localhost:6188/Contract/GetAll',
+        //dataSource: contarctArr,    //'http://localhost:6188/Contract/GetAll',
         uiLibrary: 'bootstrap',
         columns: [
             { field: 'id', title: 'ID', width: 45 },
@@ -29,21 +31,22 @@ $(document).ready(function () {
         .withUrl('http://localhost:6188/contractsHub')
         .build();
 
-    //$("#btnSend").on('click', function () {
-    //    hubConnection.invoke('SendReloadContracts', 'test_msg')
-    //        .catch(function (err) {
-    //            return console.error(err.toString());
-    //        });
-    //});
+    hubConnection.on('RecieveContracts', function (contracts) {
+        console.log('Таблица получена');
+        grid.render(contracts);
+        console.log('Таблица загружена');
+    });
 
-    hubConnection.on('ReloadContracts', function (message) {
-        grid.reload();
+    hubConnection.on('ReloadContracts', function (contracts) {
+        contarctArr = contracts;
+        grid.render(contracts);
         console.log('Таблица перезагружена');
     });
 
     hubConnection.start()
         .then(function () {
             console.log('hubConnection.start call');
+            hubConnection.invoke("GetContracts");
         })
         .catch(function (err) {
             return console.error(err.toString());
