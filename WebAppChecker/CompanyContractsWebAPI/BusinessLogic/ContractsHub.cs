@@ -23,13 +23,17 @@ namespace CompanyContractsWebAPI.BusinessLogic
         private Contract[] GetAllContracts()
         {
             var repository = _repositoryFactory.CreateRepository<IRepository<Contract>>();
-            return repository.GetAll().ToArray();
+            return repository.GetAll().OrderBy(o => o.Id).ToArray();
         }
 
         public async Task SendReloadContracts()
         {
-            Contract[] contracts = GetAllContracts();
-            await this.Clients.All.SendAsync("ReloadContracts", contracts);
+            if (Clients != null && Clients.All != null)
+            {
+
+                Contract[] contracts = GetAllContracts();
+                await this.Clients.All.SendAsync("ReloadContracts", contracts);
+            }
         }
 
         public async Task GetContractById(int id)
@@ -53,13 +57,16 @@ namespace CompanyContractsWebAPI.BusinessLogic
             if (dbResult == null)
                 return Array.Empty<ContractDoneDto>();
 
-            return dbResult.Select(Helper.Convert<ContractDoneDto, ContractDone>).ToArray();
+            return dbResult.Select(Helper.Convert<ContractDoneDto, ContractDone>).OrderBy(o=>o.Id).ToArray();
         }
 
 
         public async Task SendReloadContractDoneForContract(int contractId)
         {
-            await this.Clients.All.SendAsync("ReloadContractDoneForContract", contractId);
+            if (Clients != null && Clients.All != null)
+            {
+                await this.Clients.All.SendAsync("ReloadContractDoneForContract", contractId);
+            }
         }
     }
 }
